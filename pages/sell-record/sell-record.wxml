@@ -1,0 +1,142 @@
+<!--pages/sell-record/sell-record.wxml-->
+<view class="container">
+  <!-- 股票信息展示 -->
+  <view class="stock-info-card">
+    <text class="stock-name">{{stockInfo.stockName}}</text>
+    <view class="stock-details">
+      <text class="detail-item">申购手数：{{stockInfo.subscriptionHands}} 手</text>
+      <text class="detail-item">成本价：¥{{stockInfo.costPrice}}</text>
+      <text class="detail-item">中签股数：{{stockInfo.winningShares}} 股</text>
+      <text class="detail-item">中签金额：¥{{winningAmount}}</text>
+    </view>
+  </view>
+
+  <!-- 卖出信息录入 -->
+  <view class="form-section">
+    <view class="section-title">录入卖出信息</view>
+    
+    <form bindsubmit="onSubmit">
+      <view class="form-item">
+        <text class="form-label">卖出价格 *</text>
+        <input 
+          class="form-input" 
+          name="sellPrice" 
+          type="digit" 
+          placeholder="请输入卖出价格" 
+          value="{{formData.sellPrice}}"
+          bindinput="onSellPriceChange"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">卖出股数</text>
+        <input 
+          class="form-input" 
+          name="sellShares" 
+          type="number" 
+          placeholder="默认全部卖出" 
+          value="{{formData.sellShares}}"
+          bindinput="onSellSharesChange"
+        />
+        <text class="form-tip">默认卖出全部中签股数：{{stockInfo.winningShares}} 股</text>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">卖出手续费</text>
+        <input 
+          class="form-input" 
+          name="sellFee" 
+          type="digit" 
+          placeholder="请输入卖出手续费" 
+          value="{{formData.sellFee}}"
+          bindinput="onSellFeeChange"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">其他费用</text>
+        <input 
+          class="form-input" 
+          name="otherFee" 
+          type="digit" 
+          placeholder="印花税、过户费等" 
+          value="{{formData.otherFee}}"
+          bindinput="onOtherFeeChange"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">卖出时间</text>
+        <picker 
+          mode="date" 
+          value="{{formData.sellDate}}" 
+          bindchange="onDateChange"
+        >
+          <view class="picker-input">
+            {{formData.sellDate || '请选择卖出时间'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">卖出时间（时分）</text>
+        <picker 
+          mode="time" 
+          value="{{formData.sellTime}}" 
+          bindchange="onTimeChange"
+        >
+          <view class="picker-input">
+            {{formData.sellTime || '请选择具体时间'}}
+          </view>
+        </picker>
+      </view>
+
+
+
+      <!-- 盈亏计算结果 -->
+      <view class="result-preview">
+        <view class="preview-title">盈亏计算结果</view>
+        
+        <view class="calculation-detail">
+          <view class="calc-item">
+            <text class="calc-label">卖出金额：</text>
+            <text class="calc-value">¥{{sellAmount}}</text>
+          </view>
+          <view class="calc-item">
+            <text class="calc-label">成本金额：</text>
+            <text class="calc-value">¥{{costAmount}}</text>
+          </view>
+          <view class="calc-item">
+            <text class="calc-label">总手续费：</text>
+            <text class="calc-value">¥{{totalFees}}</text>
+          </view>
+          <view class="calc-divider"></view>
+          <view class="calc-item profit-result">
+            <text class="calc-label">净盈亏：</text>
+            <text class="calc-value profit-{{profit >= 0 ? 'positive' : 'negative'}}">
+              {{profit >= 0 ? '+' : ''}}¥{{Math.abs(profit).toFixed(2)}}
+            </text>
+          </view>
+          <view class="calc-item">
+            <text class="calc-label">收益率：</text>
+            <text class="calc-value profit-{{profitRate >= 0 ? 'positive' : 'negative'}}">
+              {{profitRate >= 0 ? '+' : ''}}{{profitRate}}%
+            </text>
+          </view>
+        </view>
+      </view>
+
+      <view class="button-group">
+        <button formType="submit" class="btn-primary" disabled="{{!formData.sellPrice}}">
+          保存卖出记录
+        </button>
+        <button type="default" bindtap="onCancel" class="btn-secondary">
+          取消
+        </button>
+        <button type="default" bindtap="finishStock" class="btn-finish">
+          结束打新
+        </button>
+      </view>
+    </form>
+  </view>
+</view>

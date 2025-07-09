@@ -1,0 +1,103 @@
+<!--pages/history/history.wxml-->
+<view class="container">
+  <!-- 筛选条件 -->
+  <view class="filter-section">
+    <view class="filter-row">
+      <view class="filter-item">
+        <text class="filter-label">时间筛选：</text>
+        <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="date-picker">{{startDate || '开始时间'}}</view>
+        </picker>
+        <text class="filter-separator">至</text>
+        <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+          <view class="date-picker">{{endDate || '结束时间'}}</view>
+        </picker>
+      </view>
+    </view>
+    
+    <view class="filter-row">
+      <view class="filter-item">
+        <text class="filter-label">状态筛选：</text>
+        <picker bindchange="onStatusFilterChange" value="{{statusFilterIndex}}" range="{{statusFilterOptions}}">
+          <view class="status-picker">{{statusFilterOptions[statusFilterIndex]}}</view>
+        </picker>
+      </view>
+      
+      <button class="btn-reset" bindtap="resetFilter">重置</button>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <text class="stat-number">{{filteredStats.total}}</text>
+      <text class="stat-label">总记录</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number profit-{{filteredStats.totalProfit >= 0 ? 'positive' : 'negative'}}">
+        {{filteredStats.totalProfit >= 0 ? '+' : ''}}{{filteredStats.totalProfit}}
+      </text>
+      <text class="stat-label">总盈亏</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number">{{filteredStats.winningRate}}%</text>
+      <text class="stat-label">中签率</text>
+    </view>
+  </view>
+
+  <!-- 股票列表 -->
+  <view class="stock-list" wx:if="{{filteredStocks.length > 0}}">
+    <view class="stock-item" wx:for="{{filteredStocks}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}">
+      <view class="stock-header">
+        <view class="stock-name-row">
+          <text class="stock-name">{{item.stockName}}</text>
+        </view>
+        <view class="stock-meta">
+          <text class="stock-status status-{{item.status}}">
+            {{item.status === 'ongoing' ? '打新中' : '已结束'}}
+          </text>
+          <text class="stock-date">{{item.createTimeStr}}</text>
+        </view>
+      </view>
+      
+      <view class="stock-details">
+        <view class="detail-row">
+          <text class="detail-label">申购：</text>
+          <text class="detail-value">{{item.subscriptionHands}} 手</text>
+          <text class="detail-label">成本：</text>
+          <text class="detail-value">¥{{item.costPrice}}</text>
+        </view>
+        
+        <view class="detail-row">
+          <text class="detail-label">中签：</text>
+          <text class="detail-value">{{item.winningShares || 0}} 股</text>
+          <text class="detail-label">盈亏：</text>
+          <text class="detail-value profit-{{item.profit >= 0 ? 'positive' : 'negative'}}">
+            {{item.profit >= 0 ? '+' : ''}}{{item.profit || 0}}元
+          </text>
+        </view>
+
+        <view class="detail-row" wx:if="{{item.sellPrice > 0}}">
+          <text class="detail-label">卖价：</text>
+          <text class="detail-value">¥{{item.sellPrice}}</text>
+          <text class="detail-label">收益率：</text>
+          <text class="detail-value profit-{{item.profitRate >= 0 ? 'positive' : 'negative'}}">
+            {{item.profitRate >= 0 ? '+' : ''}}{{item.profitRate}}%
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{filteredStocks.length === 0}}">
+    <image class="empty-icon" src="../../images/empty.png" mode="aspectFit"></image>
+    <text class="empty-text">暂无符合条件的记录</text>
+    <button class="btn-add" bindtap="addNewStock">添加第一条记录</button>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore && filteredStocks.length > 0}}">
+    <button class="btn-load-more" bindtap="loadMore">加载更多</button>
+  </view>
+</view>

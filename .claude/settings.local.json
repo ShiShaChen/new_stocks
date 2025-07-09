@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg -n \"wx\\.request|fetch|XMLHttpRequest|\\.get|\\.post|api|API|http[s]?://|\\.com|\\.cn|\\.net|\\.org\" --type js)",
+      "Bash(rg -A 10 -B 2 \"wx\\.request\" --type js)"
+    ],
+    "deny": []
+  }
+}

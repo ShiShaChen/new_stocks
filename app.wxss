@@ -1,0 +1,91 @@
+/* app.wxss */
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background-color: #07c160;
+  color: white;
+  border-radius: 10rpx;
+  padding: 20rpx 40rpx;
+  margin: 20rpx 0;
+}
+
+.btn-secondary {
+  background-color: #576b95;
+  color: white;
+  border-radius: 10rpx;
+  padding: 20rpx 40rpx;
+  margin: 20rpx 0;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin: 20rpx 0;
+  padding: 0 30rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.form-input {
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  font-size: 30rpx;
+}
+
+.card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 20rpx 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.stock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.stock-name {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.stock-status {
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.status-ongoing {
+  background-color: #ffeaa7;
+  color: #fdcb6e;
+}
+
+.status-finished {
+  background-color: #a7f3d0;
+  color: #10b981;
+}
+
+.profit-positive {
+  color: #10b981;
+}
+
+.profit-negative {
+  color: #ef4444;
+}

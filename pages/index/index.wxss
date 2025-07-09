@@ -1,0 +1,190 @@
+/* pages/index/index.wxss */
+.container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding-bottom: 100rpx;
+}
+
+.user-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 30rpx;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  margin-right: 30rpx;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.nickname {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.welcome {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.stats-container {
+  background: white;
+  display: flex;
+  padding: 40rpx 0;
+  margin: 20rpx 30rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.action-buttons {
+  padding: 0 30rpx;
+  margin: 20rpx 0;
+}
+
+.btn-primary {
+  background-color: #07c160;
+  color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  font-size: 32rpx;
+  border: none;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  padding: 30rpx;
+  margin-top: 20rpx;
+}
+
+.stock-list {
+  margin: 0 30rpx;
+}
+
+.stock-item {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stock-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15rpx;
+}
+
+.stock-detail {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.stock-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.stock-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stock-status {
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  margin-bottom: 15rpx;
+}
+
+.status-ongoing {
+  background-color: #ffeaa7;
+  color: #fdcb6e;
+}
+
+.status-finished {
+  background-color: #a7f3d0;
+  color: #10b981;
+}
+
+.action-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.btn-mini {
+  font-size: 22rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 15rpx;
+  background-color: #576b95;
+  color: white;
+  border: none;
+  min-width: 120rpx;
+}
+
+.btn-sell {
+  background-color: #ff6b6b;
+}
+
+.profit {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.profit-positive {
+  color: #10b981;
+}
+
+.profit-negative {
+  color: #ef4444;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80rpx 30rpx;
+  color: #999;
+  font-size: 28rpx;
+}

@@ -1,0 +1,85 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 用户信息栏 -->
+  <view class="user-header" wx:if="{{userInfo}}">
+    <image class="avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+    <view class="user-details">
+      <text class="nickname">{{userInfo.nickName}}</text>
+      <text class="welcome">欢迎使用打新记录</text>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-container">
+    <view class="stat-item">
+      <text class="stat-number">{{stats.ongoingCount}}</text>
+      <text class="stat-label">打新中</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number">{{stats.finishedCount}}</text>
+      <text class="stat-label">已结束</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number profit-{{stats.totalProfit >= 0 ? 'positive' : 'negative'}}">
+        {{stats.totalProfit >= 0 ? '+' : ''}}{{stats.totalProfit}}
+      </text>
+      <text class="stat-label">总盈亏(元)</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="btn-primary" bindtap="addNewStock">
+      新增打新记录
+    </button>
+  </view>
+
+  <!-- 进行中的打新列表 -->
+  <view class="section-title">进行中的打新</view>
+  <view class="stock-list" wx:if="{{ongoingStocks.length > 0}}">
+    <view class="stock-item" wx:for="{{ongoingStocks}}" wx:key="id" bindtap="editStock" data-id="{{item.id}}">
+      <view class="stock-info">
+        <text class="stock-name">{{item.stockName}}</text>
+        <text class="stock-detail">申购 {{item.subscriptionHands}} 手 | 成本 ¥{{item.costPrice}}</text>
+        <text class="stock-time">{{item.createTimeStr}}</text>
+      </view>
+      <view class="stock-actions">
+        <text class="stock-status status-ongoing">打新中</text>
+        <view class="action-btns">
+          <button class="btn-mini" bindtap="addWinningResult" data-id="{{item.id}}" catchtap wx:if="{{item.status === 'ongoing'}}">
+            {{item.winningShares > 0 ? '修改中签' : '录入中签'}}
+          </button>
+          <button class="btn-mini btn-sell" bindtap="sellStock" data-id="{{item.id}}" catchtap wx:if="{{item.status === 'ongoing' && item.winningShares > 0}}">
+            {{item.sellPrice > 0 ? '修改卖出' : '录入卖出'}}
+          </button>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="empty-state" wx:if="{{ongoingStocks.length === 0}}">
+    <text>暂无进行中的打新记录</text>
+  </view>
+
+  <!-- 最近完成的打新 -->
+  <view class="section-title">最近完成</view>
+  <view class="stock-list" wx:if="{{recentFinished.length > 0}}">
+    <view class="stock-item" wx:for="{{recentFinished}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}">
+      <view class="stock-info">
+        <text class="stock-name">{{item.stockName}}</text>
+        <text class="stock-detail">中签 {{item.winningShares}} 股 | 成本 ¥{{item.costPrice}}</text>
+        <text class="stock-time">{{item.createTimeStr}}</text>
+      </view>
+      <view class="stock-actions">
+        <text class="stock-status status-finished">已结束</text>
+        <text class="profit profit-{{item.profit >= 0 ? 'positive' : 'negative'}}">
+          {{item.profit >= 0 ? '+' : ''}}{{item.profit}}元
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{recentFinished.length === 0}}">
+    <text>暂无已完成的打新记录</text>
+  </view>
+</view>

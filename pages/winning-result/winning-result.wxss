@@ -1,0 +1,183 @@
+/* pages/winning-result/winning-result.wxss */
+.container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 30rpx;
+  padding-bottom: 150rpx;
+}
+
+.stock-info-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  color: white;
+}
+
+.stock-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 30rpx;
+}
+
+.stock-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.detail-item {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 100rpx;
+  color: #666;
+  font-size: 28rpx;
+}
+
+.form-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.form-item {
+  margin: 30rpx 0;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+  display: block;
+}
+
+.form-input {
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  padding: 25rpx;
+  font-size: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-tip {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 10rpx;
+  display: block;
+}
+
+.picker-input {
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  padding: 25rpx;
+  font-size: 30rpx;
+  color: #333;
+  background-color: #fff;
+}
+
+.result-preview {
+  background-color: #f8f9fa;
+  border-radius: 15rpx;
+  padding: 30rpx;
+  margin: 40rpx 0;
+  border-left: 6rpx solid #07c160;
+}
+
+.preview-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 25rpx;
+}
+
+.preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15rpx 0;
+}
+
+.preview-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.preview-value {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.button-group {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 30rpx;
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.1);
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn-primary {
+  background-color: #07c160;
+  color: white;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  font-size: 32rpx;
+  border: none;
+  flex: 1;
+}
+
+.btn-primary[disabled] {
+  background-color: #ccc;
+}
+
+.btn-secondary {
+  background-color: #f0f0f0;
+  color: #666;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  font-size: 32rpx;
+  border: none;
+  flex: 1;
+}
+
+.btn-finish {
+  background-color: #ff7675;
+  color: white;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  font-size: 28rpx;
+  border: none;
+  flex: 1;
+}
+
+.readonly-tip {
+  text-align: center;
+  padding: 20rpx;
+  background-color: #f8f9fa;
+  border-radius: 10rpx;
+  margin-top: 20rpx;
+}
+
+.tip-text {
+  font-size: 26rpx;
+  color: #666;
+}

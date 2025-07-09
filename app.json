@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/add-stock/add-stock",
+    "pages/winning-result/winning-result",
+    "pages/sell-record/sell-record",
+    "pages/history/history",
+    "pages/login/login"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "打新记录",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "images/tab_home.png",
+        "selectedIconPath": "images/tab_home_selected.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "iconPath": "images/tab_history.png",
+        "selectedIconPath": "images/tab_history_selected.png",
+        "text": "历史记录"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

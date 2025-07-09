@@ -1,0 +1,59 @@
+<!--pages/login/login.wxml-->
+<view class="container">
+  <view class="login-header">
+    <image class="logo" src="../../images/logo.png" mode="aspectFit"></image>
+    <text class="app-name">打新记录</text>
+    <text class="app-desc">港股美股打新成本盈利记录</text>
+  </view>
+  
+  <view class="login-content">
+    <!-- 未授权状态 -->
+    <view wx:if="{{!hasUserInfo}}" class="auth-section">
+      <view class="auth-tips">
+        <text class="tip-title">欢迎使用打新记录</text>
+        <text class="tip-desc">需要获取您的微信信息来提供个性化服务</text>
+        <view class="feature-list">
+          <text class="feature-item">• 记录个人打新数据</text>
+          <text class="feature-item">• 自动计算盈亏情况</text>
+          <text class="feature-item">• 历史记录查询</text>
+        </view>
+      </view>
+      
+      <view class="button-group">
+        <button 
+          class="btn-primary {{isLoading ? 'loading' : ''}}" 
+          bindtap="getUserProfile" 
+          disabled="{{isLoading}}"
+        >
+          <text wx:if="{{!isLoading}}">微信授权登录</text>
+          <text wx:else>授权中...</text>
+        </button>
+        
+        <button 
+          class="btn-secondary" 
+          bindtap="useSimulatedLogin"
+          disabled="{{isLoading}}"
+        >
+          游客模式体验
+        </button>
+      </view>
+    </view>
+    
+    <!-- 已授权状态 -->
+    <view wx:if="{{hasUserInfo}}" class="user-section">
+      <view class="user-info">
+        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+        <view class="user-details">
+          <text class="nickname">{{userInfo.nickName}}</text>
+          <text class="welcome-text" wx:if="{{!userInfo.isSimulated}}">欢迎回来！</text>
+          <text class="welcome-text" wx:if="{{userInfo.isSimulated}}">游客模式</text>
+        </view>
+      </view>
+      
+      <view class="action-buttons">
+        <button class="btn-primary" bindtap="enterApp">进入应用</button>
+        <button class="btn-secondary" bindtap="logout">退出登录</button>
+      </view>
+    </view>
+  </view>
+</view>

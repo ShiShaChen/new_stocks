@@ -1,0 +1,90 @@
+<!--pages/winning-result/winning-result.wxml-->
+<view class="container">
+  <!-- 股票信息展示 -->
+  <view class="stock-info-card" wx:if="{{stockInfo.stockName}}">
+    <text class="stock-name">{{stockInfo.stockName}}</text>
+    <view class="stock-details">
+      <text class="detail-item">申购手数：{{stockInfo.subscriptionHands}} 手</text>
+      <text class="detail-item">成本价：¥{{stockInfo.costPrice}}</text>
+      <text class="detail-item">总投入：¥{{stockInfo.totalAmount}}</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{!stockInfo.stockName}}">
+    <text>正在加载股票信息...</text>
+  </view>
+
+  <!-- 中签信息录入 -->
+  <view class="form-section" wx:if="{{stockInfo.stockName}}">
+    <view class="section-title">录入中签结果</view>
+    
+    <form bindsubmit="onSubmit">
+      <view class="form-item">
+        <text class="form-label">中签股数 *</text>
+        <input 
+          class="form-input" 
+          name="winningShares" 
+          type="number" 
+          placeholder="请输入中签股数（股）" 
+          value="{{formData.winningShares}}"
+          bindinput="onWinningSharesChange"
+        />
+        <text class="form-tip">中签股数不能超过申购股数：{{maxWinningShares}} 股</text>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">中签日期</text>
+        <picker 
+          mode="date" 
+          value="{{formData.winningDate}}" 
+          bindchange="onDateChange"
+        >
+          <view class="picker-input">
+            {{formData.winningDate || '请选择中签日期'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">中签时间</text>
+        <picker 
+          mode="time" 
+          value="{{formData.winningTime}}" 
+          bindchange="onTimeChange"
+        >
+          <view class="picker-input">
+            {{formData.winningTime || '请选择具体时间'}}
+          </view>
+        </picker>
+      </view>
+
+      <!-- 计算结果预览 -->
+      <view class="result-preview" wx:if="{{formData.winningShares > 0}}">
+        <view class="preview-title">中签结果预览</view>
+        <view class="preview-item">
+          <text class="preview-label">中签股数：</text>
+          <text class="preview-value">{{formData.winningShares}} 股</text>
+        </view>
+        <view class="preview-item">
+          <text class="preview-label">中签金额：</text>
+          <text class="preview-value">¥{{calculatedAmount}}</text>
+        </view>
+        <view class="preview-item">
+          <text class="preview-label">中签率：</text>
+          <text class="preview-value">{{winningRate}}%</text>
+        </view>
+      </view>
+
+      <!-- 按钮组 -->
+      <view class="button-group">
+        <button formType="submit" class="btn-primary" disabled="{{!formData.winningShares}}">
+          保存中签结果
+        </button>
+        <button type="default" bindtap="onCancel" class="btn-secondary">
+          取消
+        </button>
+      </view>
+    </form>
+  </view>
+</view>

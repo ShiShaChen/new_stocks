@@ -1,0 +1,113 @@
+<!--pages/add-stock/add-stock.wxml-->
+<view class="container">
+  <form bindsubmit="onSubmit">
+    <view class="form-section">
+      <view class="form-item">
+        <text class="form-label">股票名称 *</text>
+        <input class="form-input" name="stockName" placeholder="请输入股票名称" value="{{formData.stockName}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">打新成本价 *</text>
+        <input class="form-input" name="costPrice" type="digit" placeholder="请输入成本价" value="{{formData.costPrice}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">申购手数 *</text>
+        <input class="form-input" name="subscriptionHands" type="number" placeholder="请输入申购手数" value="{{formData.subscriptionHands}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">打新手续费</text>
+        <input class="form-input" name="serviceFee" type="digit" placeholder="请输入手续费" value="{{formData.serviceFee}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">额外成本</text>
+        <input class="form-input" name="extraCost" type="digit" placeholder="请输入额外成本" value="{{formData.extraCost}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">是否融资</text>
+        <switch name="isFinancing" checked="{{formData.isFinancing}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">投入总金额 *</text>
+        <input class="form-input" name="totalAmount" type="digit" placeholder="请输入投入总金额" value="{{formData.totalAmount}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item" wx:if="{{isEdit}}">
+        <text class="form-label">打新状态</text>
+        <radio-group name="status" bindchange="onStatusChange">
+          <label class="radio-item">
+            <radio value="ongoing" checked="{{formData.status === 'ongoing'}}" disabled="{{readonly}}" />
+            <text>打新中</text>
+          </label>
+          <label class="radio-item">
+            <radio value="finished" checked="{{formData.status === 'finished'}}" disabled="{{readonly}}" />
+            <text>打新结束</text>
+          </label>
+        </radio-group>
+        <text class="form-tip" wx:if="{{formData.status === 'finished'}}">打新结束后，所有信息将不可修改</text>
+      </view>
+    </view>
+
+    <!-- 中签信息 -->
+    <view class="form-section" wx:if="{{isEdit && formData.winningShares > 0}}">
+      <view class="section-title">中签信息</view>
+      <view class="form-item">
+        <text class="form-label">中签股数</text>
+        <text class="form-value">{{formData.winningShares}} 股</text>
+      </view>
+      <view class="form-item" wx:if="{{formData.winningTime}}">
+        <text class="form-label">中签时间</text>
+        <text class="form-value">{{formData.winningTimeStr}}</text>
+      </view>
+    </view>
+
+    <!-- 卖出信息 -->
+    <view class="form-section" wx:if="{{isEdit && formData.sellPrice > 0}}">
+      <view class="section-title">卖出信息</view>
+      <view class="form-item">
+        <text class="form-label">卖出价格</text>
+        <text class="form-value">¥{{formData.sellPrice}}</text>
+      </view>
+      <view class="form-item">
+        <text class="form-label">盈利金额</text>
+        <text class="form-value profit-{{formData.profit >= 0 ? 'positive' : 'negative'}}">
+          {{formData.profit >= 0 ? '+' : ''}}{{formData.profit}}元
+        </text>
+      </view>
+      <view class="form-item" wx:if="{{formData.sellTime}}">
+        <text class="form-label">卖出时间</text>
+        <text class="form-value">{{formData.sellTimeStr}}</text>
+      </view>
+    </view>
+
+    <view class="button-group" wx:if="{{!readonly}}">
+      <button formType="submit" class="btn-primary">
+        {{isEdit ? '更新记录' : '保存记录'}}
+      </button>
+      <button type="default" bindtap="onCancel" class="btn-secondary">
+        取消
+      </button>
+    </view>
+
+    <!-- 只读模式下的操作按钮 -->
+    <view class="button-group" wx:if="{{readonly}}">
+      <button bindtap="editRecord" class="btn-primary" wx:if="{{formData.status === 'ongoing'}}">
+        编辑记录
+      </button>
+      <button bindtap="addWinning" class="btn-secondary" wx:if="{{formData.status === 'ongoing'}}">
+        {{formData.winningShares > 0 ? '修改中签' : '录入中签'}}
+      </button>
+      <button bindtap="addSell" class="btn-secondary" wx:if="{{formData.status === 'ongoing' && formData.winningShares > 0}}">
+        {{formData.sellPrice > 0 ? '修改卖出' : '录入卖出'}}
+      </button>
+      <view class="status-tip" wx:if="{{formData.status === 'finished'}}">
+        <text class="tip-text">该记录已完成，无法进行操作</text>
+      </view>
+    </view>
+  </form>
+</view>

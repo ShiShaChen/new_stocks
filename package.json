@@ -1,0 +1,32 @@
+{
+  "name": "new-stocks-tracker",
+  "version": "1.0.0",
+  "description": "港股美股打新记录小程序 - 用于记录和管理股票打新的成本和盈利情况",
+  "main": "app.js",
+  "scripts": {
+    "dev": "微信开发者工具打开项目目录",
+    "build": "微信开发者工具编译上传"
+  },
+  "keywords": [
+    "微信小程序",
+    "港股",
+    "美股",
+    "打新",
+    "投资记录",
+    "盈亏计算"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "miniprogram": {
+    "appid": "你的小程序AppID",
+    "version": "1.0.0",
+    "description": "港股美股打新记录助手"
+  },
+  "repository": {
+    "type": "git",
+    "url": "你的代码仓库地址"
+  },
+  "devDependencies": {
+    "@types/wechat-miniprogram": "^3.4.0"
+  }
+}
