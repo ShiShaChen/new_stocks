@@ -6,21 +6,30 @@ Page({
     maxWinningShares: 0,
     formData: {
       winningShares: '',
-      winningDate: '',
-      winningTime: ''
+      winningDate: ''
     },
     calculatedAmount: '0.00',
-    winningRate: '0.00'
+    winningRate: '0.00',
+    feeDetails: {
+      stampDuty: '0.00',        // 印花税
+      tradingFee: '0.00',       // 交易费
+      tradingLevy: '0.00',      // 交易征费
+      afrcLevy: '0.00',         // 会财局交易征费
+      packageFee: '0.00',       // 打新套餐费用
+      totalFee: '0.00'          // 总费用
+    }
   },
 
   onLoad(options) {
     console.log('winning-result页面加载，参数:', options)
     
-    if (options.stockId) {
+    // 确保参数类型正确，真机可能传递的是字符串
+    const stockId = options.stockId || options.id
+    if (stockId) {
       this.setData({
-        stockId: options.stockId
+        stockId: stockId
       })
-      this.loadStockInfo(options.stockId)
+      this.loadStockInfo(stockId)
     } else {
       console.log('错误：没有接收到stockId参数')
       wx.showModal({
@@ -34,14 +43,12 @@ Page({
       return
     }
 
-    // 设置默认时间为当前时间
+    // 设置默认日期为当前日期
     const now = new Date()
     const currentDate = this.formatDate(now)
-    const currentTime = this.formatTime(now)
     
     this.setData({
-      'formData.winningDate': currentDate,
-      'formData.winningTime': currentTime
+      'formData.winningDate': currentDate
     })
   },
 
@@ -52,15 +59,26 @@ Page({
     return `${year}-${month}-${day}`
   },
 
-  formatTime(date) {
-    const hour = date.getHours().toString().padStart(2, '0')
-    const minute = date.getMinutes().toString().padStart(2, '0')
-    return `${hour}:${minute}`
-  },
-
   loadStockInfo(stockId) {
     console.log('开始加载股票信息，stockId:', stockId)
-    const stocks = wx.getStorageSync('stocks') || []
+    
+    // 添加获取存储的错误处理
+    let stocks = []
+    try {
+      stocks = wx.getStorageSync('stocks') || []
+    } catch (error) {
+      console.log('获取存储数据失败:', error)
+      wx.showModal({
+        title: '错误',
+        content: '无法获取股票数据，请重试',
+        showCancel: false,
+        success: () => {
+          wx.navigateBack()
+        }
+      })
+      return
+    }
+    
     console.log('所有股票数据:', stocks)
     
     const stock = stocks.find(item => item.id === stockId)
@@ -80,12 +98,12 @@ Page({
       })
 
       // 如果已有中签记录，回显数据
+      console.log('=======' + stock.winningShares)
       if (stock.winningShares > 0) {
         const winningTime = new Date(stock.winningTime)
         this.setData({
           'formData.winningShares': stock.winningShares.toString(),
-          'formData.winningDate': this.formatDate(winningTime),
-          'formData.winningTime': this.formatTime(winningTime)
+          'formData.winningDate': this.formatDate(winningTime)
         })
         this.calculateResult()
         
@@ -113,6 +131,7 @@ Page({
   },
 
   onWinningSharesChange(e) {
+    console.log('中签股数输入变化:', e.detail.value)
     const value = parseInt(e.detail.value) || 0
     const maxShares = this.data.maxWinningShares
     
@@ -121,14 +140,47 @@ Page({
         title: `中签股数不能超过${maxShares}股`,
         icon: 'none'
       })
-      return
+      // 不return，允许用户继续输入，只是给出提示
     }
 
     this.setData({
-      'formData.winningShares': value.toString()
+      'formData.winningShares': e.detail.value // 保持原始输入值
     })
     
+    // 实时计算结果
     this.calculateResult()
+  },
+
+  // 输入框获取焦点时的处理
+  onInputFocus(e) {
+    console.log('输入框获取焦点')
+    // 在真机上，有时需要延迟处理来确保焦点正确设置
+    setTimeout(() => {
+      // 这里可以添加一些额外的处理逻辑
+      console.log('输入框焦点设置完成')
+    }, 100)
+  },
+
+  // 输入框失去焦点时的处理
+  onInputBlur(e) {
+    console.log('输入框失去焦点')
+    // 验证输入值
+    const value = parseInt(e.detail.value) || 0
+    const maxShares = this.data.maxWinningShares
+    
+    if (value > maxShares) {
+      wx.showModal({
+        title: '输入错误',
+        content: `中签股数不能超过申购股数${maxShares}股，请重新输入`,
+        showCancel: false,
+        success: () => {
+          // 清空输入或设置为最大值
+          this.setData({
+            'formData.winningShares': ''
+          })
+        }
+      })
+    }
   },
 
   onDateChange(e) {
@@ -137,30 +189,74 @@ Page({
     })
   },
 
-  onTimeChange(e) {
-    this.setData({
-      'formData.winningTime': e.detail.value
-    })
-  },
-
   calculateResult() {
     const winningShares = parseInt(this.data.formData.winningShares) || 0
-    const costPrice = this.data.stockInfo.costPrice || 0
+    const issuePrice = this.data.stockInfo.issuePrice || 0
     const subscriptionHands = this.data.stockInfo.subscriptionHands || 0
+    const packageFee = this.data.stockInfo.packageFee || 0
     
-    if (winningShares > 0) {
+    if (winningShares > 0 && issuePrice > 0) {
       // 计算中签金额
-      const calculatedAmount = (winningShares * costPrice).toFixed(2)
+      const calculatedAmount = (winningShares * issuePrice).toFixed(2)
       
       // 计算中签率
       const isHKStock = this.isHKStock(this.data.stockInfo.stockName)
       const totalShares = isHKStock ? subscriptionHands * 100 : subscriptionHands
       const winningRate = totalShares > 0 ? ((winningShares / totalShares) * 100).toFixed(2) : '0.00'
       
+      // 计算各项费用
+      const feeDetails = this.calculateFees(winningShares, issuePrice, packageFee)
+      
       this.setData({
         calculatedAmount: calculatedAmount,
-        winningRate: winningRate
+        winningRate: winningRate,
+        feeDetails: feeDetails
       })
+      
+      console.log('费用计算结果:', {
+        winningShares: winningShares,
+        issuePrice: issuePrice,
+        calculatedAmount: calculatedAmount,
+        feeDetails: feeDetails
+      })
+    } else {
+      // 重置费用明细
+      this.setData({
+        calculatedAmount: '0.00',
+        winningRate: '0.00',
+        feeDetails: {
+          stampDuty: '0.00',
+          tradingFee: '0.00',
+          tradingLevy: '0.00',
+          afrcLevy: '0.00',
+          packageFee: '0.00',
+          totalFee: '0.00'
+        }
+      })
+    }
+  },
+
+  // 计算各项费用
+  calculateFees(winningShares, issuePrice, packageFee) {
+    // 中签金额作为费用计算基数
+    const baseAmount = winningShares * issuePrice
+    
+    // 各项费用计算（使用精确计算避免浮点数问题）
+    const stampDuty = Math.round(baseAmount * 0.001 * 100) / 100  // 印花税 0.1%
+    const tradingFee = Math.round(baseAmount * 0.0000565 * 100) / 100  // 交易费 0.00565%
+    const tradingLevy = Math.round(baseAmount * 0.000027 * 100) / 100  // 交易征费 0.0027%
+    const afrcLevy = Math.round(baseAmount * 0.0000015 * 100) / 100  // 会财局交易征费 0.00015%
+    
+    // 总费用
+    const totalFee = Math.round((stampDuty + tradingFee + tradingLevy + afrcLevy + packageFee) * 100) / 100
+    
+    return {
+      stampDuty: stampDuty.toFixed(2),
+      tradingFee: tradingFee.toFixed(2),
+      tradingLevy: tradingLevy.toFixed(2),
+      afrcLevy: afrcLevy.toFixed(2),
+      packageFee: packageFee.toFixed(2),
+      totalFee: totalFee.toFixed(2)
     }
   },
 
@@ -184,12 +280,13 @@ Page({
       return
     }
 
-    // 组合完整的中签时间
-    const winningDateTime = new Date(`${this.data.formData.winningDate} ${this.data.formData.winningTime}`)
+    // 使用中签日期+固定时间 12:00
+    const winningDateTime = new Date(`${this.data.formData.winningDate} 12:00`)
     
     this.saveWinningResult({
       winningShares: winningShares,
-      winningTime: winningDateTime.getTime()
+      winningTime: winningDateTime.getTime(),
+      winningFeeDetails: this.data.feeDetails
     })
   },
 
@@ -210,7 +307,8 @@ Page({
       stocks[stockIndex] = {
         ...stocks[stockIndex],
         winningShares: winningData.winningShares,
-        winningTime: winningData.winningTime
+        winningTime: winningData.winningTime,
+        winningFeeDetails: winningData.winningFeeDetails
       }
       
       console.log('修改后的股票数据:', stocks[stockIndex])

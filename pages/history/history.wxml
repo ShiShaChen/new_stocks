@@ -22,6 +22,15 @@
           <view class="status-picker">{{statusFilterOptions[statusFilterIndex]}}</view>
         </picker>
       </view>
+    </view>
+    
+    <view class="filter-row">
+      <view class="filter-item">
+        <text class="filter-label">账户筛选：</text>
+        <picker bindchange="onAccountFilterChange" value="{{accountFilterIndex}}" range="{{accountFilterOptions}}">
+          <view class="account-picker">{{accountFilterOptions[accountFilterIndex]}}</view>
+        </picker>
+      </view>
       
       <button class="btn-reset" bindtap="resetFilter">重置</button>
     </view>
@@ -34,8 +43,7 @@
       <text class="stat-label">总记录</text>
     </view>
     <view class="stat-item">
-      <text class="stat-number profit-{{filteredStats.totalProfit >= 0 ? 'positive' : 'negative'}}">
-        {{filteredStats.totalProfit >= 0 ? '+' : ''}}{{filteredStats.totalProfit}}
+      <text class="stat-number profit-{{filteredStats.totalProfit >= 0 ? 'positive' : 'negative'}}">{{filteredStats.totalProfit >= 0 ? '+' : ''}}{{filteredStats.totalProfit}}
       </text>
       <text class="stat-label">总盈亏</text>
     </view>
@@ -49,31 +57,32 @@
   <view class="stock-list" wx:if="{{filteredStocks.length > 0}}">
     <view class="stock-item" wx:for="{{filteredStocks}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}">
       <view class="stock-header">
-        <view class="stock-name-row">
-          <text class="stock-name">{{item.stockName}}</text>
-        </view>
-        <view class="stock-meta">
-          <text class="stock-status status-{{item.status}}">
-            {{item.status === 'ongoing' ? '打新中' : '已结束'}}
-          </text>
-          <text class="stock-date">{{item.createTimeStr}}</text>
-        </view>
+        <text class="stock-name">{{item.stockName}}</text>
+        <text class="stock-account">{{item.accountName}}</text>
+        <text class="stock-status status-{{item.status}}">{{item.status === 'ongoing' ? '打新中' : '已结束'}}</text>
+        <text class="stock-date">{{item.createTimeStr}}</text>
       </view>
       
       <view class="stock-details">
         <view class="detail-row">
           <text class="detail-label">申购：</text>
           <text class="detail-value">{{item.subscriptionHands}} 手</text>
-          <text class="detail-label">成本：</text>
-          <text class="detail-value">¥{{item.costPrice}}</text>
+          <text class="detail-label" decode="true">发行价：</text>
+          <text class="detail-value">¥{{item.issuePrice}}</text>
+        </view>
+        
+        <view class="detail-row">
+          <text class="detail-label">方法：</text>
+          <text class="detail-value">{{item.subscriptionMethod === 'cash' ? '现金' : '90孖展'}}</text>
+          <text class="detail-label" decode="true">套餐费：</text>
+          <text class="detail-value">¥{{item.packageFee}}</text>
         </view>
         
         <view class="detail-row">
           <text class="detail-label">中签：</text>
           <text class="detail-value">{{item.winningShares || 0}} 股</text>
-          <text class="detail-label">盈亏：</text>
-          <text class="detail-value profit-{{item.profit >= 0 ? 'positive' : 'negative'}}">
-            {{item.profit >= 0 ? '+' : ''}}{{item.profit || 0}}元
+          <text class="detail-label" decode="true">盈亏：&ensp;&ensp;</text>
+          <text class="detail-value profit-{{item.profit >= 0 ? 'positive' : 'negative'}}">{{item.profit >= 0 ? '+' : ''}}{{item.profit || 0}}元
           </text>
         </view>
 
@@ -81,8 +90,7 @@
           <text class="detail-label">卖价：</text>
           <text class="detail-value">¥{{item.sellPrice}}</text>
           <text class="detail-label">收益率：</text>
-          <text class="detail-value profit-{{item.profitRate >= 0 ? 'positive' : 'negative'}}">
-            {{item.profitRate >= 0 ? '+' : ''}}{{item.profitRate}}%
+          <text class="detail-value profit-{{item.profitRate >= 0 ? 'positive' : 'negative'}}">{{item.profitRate >= 0 ? '+' : ''}}{{item.profitRate}}%
           </text>
         </view>
       </view>

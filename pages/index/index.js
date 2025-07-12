@@ -2,6 +2,7 @@
 Page({
   data: {
     userInfo: null,
+    currentAccount: { id: 'default', name: '默认账户' },
     ongoingStocks: [],
     recentFinished: [],
     stats: {
@@ -17,6 +18,13 @@ Page({
 
   onShow() {
     this.checkLogin() // 每次显示时都检查登录状态
+    
+    // 检查是否有账户变更
+    if (wx.getStorageSync('accountChanged')) {
+      wx.removeStorageSync('accountChanged')
+      this.loadCurrentAccount()
+    }
+    
     if (this.data.userInfo) {
       this.loadData()
     }
@@ -39,20 +47,59 @@ Page({
       userInfo: userInfo
     })
     
+    // 加载当前账户
+    this.loadCurrentAccount()
+    
     // 加载数据
     this.loadData()
   },
 
+  // 加载当前账户
+  loadCurrentAccount() {
+    const currentAccountId = wx.getStorageSync('currentAccountId') || 'default'
+    const accounts = wx.getStorageSync('accounts') || []
+    
+    // 如果没有账户，创建默认账户
+    if (accounts.length === 0) {
+      const defaultAccount = {
+        id: 'default',
+        name: '默认账户',
+        isDefault: true,
+        createTime: new Date().getTime()
+      }
+      accounts.push(defaultAccount)
+      wx.setStorageSync('accounts', accounts)
+    }
+    
+    const currentAccount = accounts.find(acc => acc.id === currentAccountId) || accounts[0]
+    
+    this.setData({
+      currentAccount: currentAccount
+    })
+    
+    // 更新导航栏标题显示当前账户
+    wx.setNavigationBarTitle({
+      title: `打新记录 - ${currentAccount.name}`
+    })
+  },
+
   loadData() {
-    // 从本地存储加载数据
+    // 从本地存储加载数据，按当前账户过滤
     const stocks = wx.getStorageSync('stocks') || []
+    const currentAccountId = this.data.currentAccount.id
+    
+    // 过滤当前账户的数据
+    const accountStocks = stocks.filter(stock => {
+      const stockAccountId = stock.accountId || 'default'
+      return stockAccountId === currentAccountId
+    })
     
     // 分类处理数据
     const ongoingStocks = []
     const finishedStocks = []
     let totalProfit = 0
 
-    stocks.forEach(stock => {
+    accountStocks.forEach(stock => {
       // 格式化时间
       stock.createTimeStr = this.formatDate(stock.createTime)
       

@@ -18,7 +18,27 @@
   font-size: 36rpx;
   font-weight: bold;
   display: block;
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.cost-price-display {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cost-label {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.cost-value {
+  font-size: 32rpx;
+  font-weight: bold;
 }
 
 .stock-details {
@@ -64,6 +84,7 @@
   padding: 25rpx;
   font-size: 30rpx;
   width: 100%;
+  height: auto;
   box-sizing: border-box;
 }
 
@@ -97,6 +118,62 @@
   color: #333;
   margin-bottom: 25rpx;
   text-align: center;
+}
+
+/* 费用明细样式 */
+.fee-details {
+  background: white;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  margin-bottom: 25rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+}
+
+.fee-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.fee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.fee-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.fee-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.fee-total {
+  border-top: 1rpx solid #eee;
+  padding-top: 12rpx;
+  margin-top: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fee-total-label {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.fee-total-value {
+  font-size: 26rpx;
+  color: #ff7675;
+  font-weight: bold;
 }
 
 .calculation-detail {
@@ -200,4 +277,18 @@
 .tip-text {
   font-size: 26rpx;
   color: #666;
+}
+
+.calc-tip {
+  margin-top: 15rpx;
+  padding: 15rpx;
+  background-color: rgba(255, 118, 117, 0.1);
+  border-radius: 8rpx;
+  text-align: center;
+}
+
+.calc-tip .tip-text {
+  font-size: 22rpx;
+  color: #ff7675;
+  font-weight: 500;
 }

@@ -5,7 +5,8 @@
     "pages/winning-result/winning-result",
     "pages/sell-record/sell-record",
     "pages/history/history",
-    "pages/login/login"
+    "pages/login/login",
+    "pages/profile/profile"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -30,6 +31,12 @@
         "iconPath": "images/tab_history.png",
         "selectedIconPath": "images/tab_history_selected.png",
         "text": "历史记录"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "iconPath": "images/tab_home.png",
+        "selectedIconPath": "images/tab_home_selected.png",
+        "text": "我的"
       }
     ]
   },

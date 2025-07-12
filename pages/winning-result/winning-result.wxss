@@ -68,10 +68,23 @@
 .form-input {
   border: 1rpx solid #ddd;
   border-radius: 10rpx;
-  padding: 25rpx;
+  height: 80rpx;
   font-size: 30rpx;
   width: 100%;
   box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
+  /* 解决微信小程序真机input焦点问题 */
+  -webkit-user-select: auto;
+  user-select: auto;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-input:focus {
+  border-color: #07c160;
+  outline: none;
+  box-shadow: 0 0 0 2rpx rgba(7, 193, 96, 0.2);
 }
 
 .form-tip {
@@ -120,6 +133,64 @@
 .preview-value {
   font-size: 26rpx;
   color: #333;
+  font-weight: bold;
+}
+
+/* 费用明细样式 */
+.fee-details {
+  background-color: #fff;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  margin-top: 25rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.fee-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.fee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12rpx 0;
+}
+
+.fee-label {
+  font-size: 24rpx;
+  color: #666;
+  flex: 1;
+}
+
+.fee-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.fee-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15rpx;
+  padding-top: 15rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.fee-total-label {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.fee-total-value {
+  font-size: 26rpx;
+  color: #e74c3c;
   font-weight: bold;
 }
 

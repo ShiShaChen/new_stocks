@@ -45,7 +45,7 @@
     }
   },
   "compileType": "miniprogram",
-  "libVersion": "2.19.4",
+  "libVersion": "2.33.1",
   "appid": "wxd84a356104149b2c",
   "projectname": "new_stocks",
   "simulatorType": "wechat",

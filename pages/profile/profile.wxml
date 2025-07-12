@@ -1,0 +1,140 @@
+<!--pages/profile/profile.wxml-->
+<view class="container">
+  <!-- 用户信息区域 -->
+  <view class="user-section" wx:if="{{userInfo}}">
+    <view class="user-info">
+      <image class="avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      <view class="user-details">
+        <text class="nickname">{{userInfo.nickName}}</text>
+        <text class="user-desc">打新投资者</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 未登录状态 -->
+  <view class="login-section" wx:if="{{!userInfo}}">
+    <view class="login-prompt">
+      <image class="login-icon" src="/images/logo.png" mode="aspectFit"></image>
+      <text class="login-text">请先登录</text>
+      <button class="login-btn" bindtap="onLogin">立即登录</button>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section" wx:if="{{userInfo}}">
+    <!-- 当前账户显示 -->
+    <view class="current-account-section">
+      <view class="account-header">
+        <text class="section-title">当前账户</text>
+        <text class="current-account-name">{{currentAccount.name}}</text>
+      </view>
+      <button class="switch-account-btn" bindtap="onSwitchAccount">
+        切换账户
+      </button>
+    </view>
+
+    <!-- 账户管理 -->
+    <view class="menu-title">账户管理</view>
+    
+    <view class="menu-list">
+      <view class="menu-item" bindtap="onManageAccounts">
+        <view class="menu-content">
+          <text class="menu-icon">👤</text>
+          <text class="menu-text">管理账户</text>
+          <text class="menu-desc">{{accountList.length}}个账户</text>
+        </view>
+        <text class="menu-arrow">></text>
+      </view>
+      
+      <view class="menu-item" bindtap="onAbout">
+        <view class="menu-content">
+          <text class="menu-icon">ℹ️</text>
+          <text class="menu-text">关于应用</text>
+        </view>
+        <text class="menu-arrow">></text>
+      </view>
+      
+      <view class="menu-item" bindtap="onFeedback">
+        <view class="menu-content">
+          <text class="menu-icon">💬</text>
+          <text class="menu-text">意见反馈</text>
+        </view>
+        <text class="menu-arrow">></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出按钮 -->
+  <view class="logout-section" wx:if="{{userInfo}}">
+    <button class="logout-btn" bindtap="onLogout">退出登录</button>
+  </view>
+
+  <!-- 账户切换弹窗 -->
+  <view class="account-modal" wx:if="{{showAccountModal}}" bindtap="onCloseAccountModal">
+    <view class="modal-content" catchtap>
+      <view class="modal-header">
+        <text class="modal-title">选择账户</text>
+        <button class="add-account-btn" bindtap="onAddAccount">+ 新增账户</button>
+      </view>
+      
+      <view class="account-list">
+        <view 
+          class="account-item {{currentAccount.id === item.id ? 'active' : ''}}" 
+          wx:for="{{accountList}}" 
+          wx:key="id"
+          bindtap="onSelectAccount"
+          data-account="{{item}}"
+        >
+          <view class="account-info">
+            <text class="account-name">{{item.name}}</text>
+            <text class="account-desc" wx:if="{{item.isDefault}}">默认账户</text>
+          </view>
+          <text class="check-icon" wx:if="{{currentAccount.id === item.id}}">✓</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 新增/编辑账户弹窗 -->
+  <view class="add-account-modal" wx:if="{{showAddAccountModal}}" bindtap="onCloseAddAccountModal">
+    <view class="modal-content" catchtap>
+      <view class="modal-header">
+        <text class="modal-title">{{editingAccount.id ? '编辑账户' : '新增账户'}}</text>
+      </view>
+      
+      <view class="form-section">
+        <view class="form-item">
+          <text class="form-label">账户名称</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入账户名称" 
+            value="{{editingAccount.name}}"
+            bindinput="onAccountNameChange"
+            maxlength="20"
+          />
+        </view>
+        
+        <view class="form-item" wx:if="{{!editingAccount.isDefault}}">
+          <label class="checkbox-item">
+            <checkbox 
+              checked="{{editingAccount.setAsDefault}}" 
+              bindchange="onSetDefaultChange"
+            />
+            <text class="checkbox-text">设为默认账户</text>
+          </label>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="onCloseAddAccountModal">取消</button>
+        <button 
+          class="btn-confirm" 
+          bindtap="onSaveAccount"
+          disabled="{{!editingAccount.name}}"
+        >
+          保存
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

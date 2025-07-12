@@ -122,3 +122,198 @@
   font-size: 28rpx;
   color: #999;
 }
+
+/* 账户选择器样式 */
+.account-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 15rpx;
+  background: white;
+  min-height: 60rpx;
+  box-sizing: border-box;
+}
+
+.account-name {
+  font-size: 30rpx;
+  color: #333;
+  flex: 1;
+}
+
+.selector-arrow {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 弹窗样式 */
+.account-modal, .add-account-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20rpx;
+  width: 80%;
+  max-width: 600rpx;
+  max-height: 80%;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 40rpx 30rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-account-btn {
+  background-color: #07c160;
+  color: white;
+  border-radius: 30rpx;
+  padding: 10rpx 20rpx;
+  font-size: 24rpx;
+  border: none;
+}
+
+.account-list {
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.account-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.account-item:last-child {
+  border-bottom: none;
+}
+
+.account-item.active {
+  background-color: #f8f9fa;
+}
+
+.account-info {
+  flex: 1;
+}
+
+.account-desc {
+  font-size: 24rpx;
+  color: #07c160;
+  display: block;
+  margin-top: 5rpx;
+}
+
+.check-icon {
+  font-size: 28rpx;
+  color: #07c160;
+  font-weight: bold;
+}
+
+.modal-footer {
+  padding: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.btn-cancel, .btn-confirm {
+  flex: 1;
+  padding: 25rpx;
+  border-radius: 15rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.btn-cancel {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.btn-confirm {
+  background-color: #07c160;
+  color: white;
+}
+
+.btn-confirm:disabled {
+  background-color: #ccc;
+  color: #999;
+}
+
+/* 费用明细样式 */
+.fee-details {
+  background-color: #f8f9fa;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  margin-top: 20rpx;
+  border-left: 6rpx solid #ff7675;
+}
+
+.fee-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.fee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.fee-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.fee-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.fee-total {
+  border-top: 1rpx solid #eee;
+  padding-top: 12rpx;
+  margin-top: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fee-total-label {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.fee-total-value {
+  font-size: 26rpx;
+  color: #ff7675;
+  font-weight: bold;
+}

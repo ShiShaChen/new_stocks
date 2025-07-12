@@ -5,8 +5,8 @@
     <text class="stock-name">{{stockInfo.stockName}}</text>
     <view class="stock-details">
       <text class="detail-item">申购手数：{{stockInfo.subscriptionHands}} 手</text>
-      <text class="detail-item">成本价：¥{{stockInfo.costPrice}}</text>
-      <text class="detail-item">总投入：¥{{stockInfo.totalAmount}}</text>
+      <text class="detail-item">发行价：¥{{stockInfo.issuePrice}}</text>
+      <text class="detail-item">套餐费用：¥{{stockInfo.packageFee}}</text>
     </view>
   </view>
 
@@ -29,6 +29,12 @@
           placeholder="请输入中签股数（股）" 
           value="{{formData.winningShares}}"
           bindinput="onWinningSharesChange"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
+          cursor-spacing="50"
+          adjust-position="{{true}}"
+          hold-keyboard="{{true}}"
+          confirm-type="done"
         />
         <text class="form-tip">中签股数不能超过申购股数：{{maxWinningShares}} 股</text>
       </view>
@@ -42,19 +48,6 @@
         >
           <view class="picker-input">
             {{formData.winningDate || '请选择中签日期'}}
-          </view>
-        </picker>
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">中签时间</text>
-        <picker 
-          mode="time" 
-          value="{{formData.winningTime}}" 
-          bindchange="onTimeChange"
-        >
-          <view class="picker-input">
-            {{formData.winningTime || '请选择具体时间'}}
           </view>
         </picker>
       </view>
@@ -73,6 +66,35 @@
         <view class="preview-item">
           <text class="preview-label">中签率：</text>
           <text class="preview-value">{{winningRate}}%</text>
+        </view>
+        
+        <!-- 费用明细 -->
+        <view class="fee-details">
+          <view class="fee-title">应收费用明细</view>
+          <view class="fee-item">
+            <text class="fee-label">印花税 (0.1%)：</text>
+            <text class="fee-value">¥{{feeDetails.stampDuty}}</text>
+          </view>
+          <view class="fee-item">
+            <text class="fee-label">交易费 (0.00565%)：</text>
+            <text class="fee-value">¥{{feeDetails.tradingFee}}</text>
+          </view>
+          <view class="fee-item">
+            <text class="fee-label">交易征费 (0.0027%)：</text>
+            <text class="fee-value">¥{{feeDetails.tradingLevy}}</text>
+          </view>
+          <view class="fee-item">
+            <text class="fee-label">会财局交易征费 (0.00015%)：</text>
+            <text class="fee-value">¥{{feeDetails.afrcLevy}}</text>
+          </view>
+          <view class="fee-item">
+            <text class="fee-label">打新套餐费用：</text>
+            <text class="fee-value">¥{{feeDetails.packageFee}}</text>
+          </view>
+          <view class="fee-total">
+            <text class="fee-total-label">总费用：</text>
+            <text class="fee-total-value">¥{{feeDetails.totalFee}}</text>
+          </view>
         </view>
       </view>
 

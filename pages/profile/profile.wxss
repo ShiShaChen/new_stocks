@@ -1,0 +1,351 @@
+/* pages/profile/profile.wxss */
+.container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding-bottom: 100rpx;
+}
+
+.user-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 30rpx 40rpx;
+  color: white;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  margin-right: 30rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.user-desc {
+  font-size: 26rpx;
+  opacity: 0.8;
+}
+
+.login-section {
+  padding: 120rpx 30rpx;
+  text-align: center;
+}
+
+.login-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.6;
+}
+
+.login-text {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 40rpx;
+}
+
+.login-btn {
+  background-color: #07c160;
+  color: white;
+  border-radius: 50rpx;
+  padding: 20rpx 60rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.menu-section {
+  margin: 30rpx;
+  width: 80%;
+}
+
+.menu-title {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+  padding-left: 10rpx;
+}
+
+.menu-list {
+  background: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-content {
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon {
+  font-size: 32rpx;
+  margin-right: 20rpx;
+}
+
+.menu-text {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.menu-arrow {
+  font-size: 28rpx;
+  color: #ccc;
+}
+
+.logout-section {
+  padding: 40rpx 30rpx;
+}
+
+.logout-btn {
+  background-color: #ff4757;
+  color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  font-size: 32rpx;
+  border: none;
+  width: 100%;
+}
+
+/* 当前账户区域样式 */
+.current-account-section {
+  background: white;
+  width: 80%;
+  margin-bottom: 30rpx;
+  border-radius: 20rpx;
+  padding: 40rpx 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-header {
+  flex: 1;
+}
+
+.section-title {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.current-account-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.switch-account-btn {
+  background-color: #576b95;
+  color: white;
+  border-radius: 30rpx;
+  padding: 15rpx 30rpx;
+  font-size: 26rpx;
+  border: none;
+  min-width: 120rpx;
+  max-width: 180rpx;
+}
+
+.menu-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 20rpx;
+}
+
+/* 弹窗样式 */
+.account-modal, .add-account-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20rpx;
+  width: 80%;
+  max-width: 600rpx;
+  max-height: 80%;
+  overflow: hidden;
+  position: relative;
+}
+
+.modal-header {
+  padding: 40rpx 30rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-account-btn {
+  background-color: #07c160;
+  color: white;
+  border-radius: 30rpx;
+  padding: 10rpx 20rpx;
+  font-size: 24rpx;
+  border: none;
+}
+
+/* 账户列表样式 */
+.account-list {
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.account-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  position: relative;
+}
+
+.account-item:last-child {
+  border-bottom: none;
+}
+
+.account-item.active {
+  background-color: #f8f9fa;
+}
+
+.account-info {
+  flex: 1;
+}
+
+.account-name {
+  font-size: 30rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.account-desc {
+  font-size: 24rpx;
+  color: #07c160;
+}
+
+.check-icon {
+  font-size: 28rpx;
+  color: #07c160;
+  font-weight: bold;
+}
+
+/* 表单样式 */
+.form-section {
+  padding: 30rpx;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 15rpx;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  height: 100rpx;
+  padding: 25rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 15rpx;
+  font-size: 30rpx;
+  box-sizing: border-box;
+  background: white;
+}
+
+.form-input:focus {
+  border-color: #07c160;
+  outline: none;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-text {
+  font-size: 28rpx;
+  color: #333;
+  margin-left: 20rpx;
+}
+
+.modal-footer {
+  padding: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.btn-cancel, .btn-confirm {
+  flex: 1;
+  padding: 25rpx;
+  border-radius: 15rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.btn-cancel {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.btn-confirm {
+  background-color: #07c160;
+  color: white;
+}
+
+.btn-confirm:disabled {
+  background-color: #ccc;
+  color: #999;
+}

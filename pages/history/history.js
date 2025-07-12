@@ -13,6 +13,9 @@ Page({
     endDate: '',
     statusFilterIndex: 0,
     statusFilterOptions: ['全部', '打新中', '已结束'],
+    accountFilterIndex: 0,
+    accountFilterOptions: ['全部'],
+    accountList: [],
     
     // 统计信息
     filteredStats: {
@@ -23,16 +26,19 @@ Page({
   },
 
   onLoad() {
+    this.initializeAccounts()
     this.loadAllData()
   },
 
   onShow() {
+    this.initializeAccounts()
     this.loadAllData()
   },
 
   loadAllData() {
     const stocks = wx.getStorageSync('stocks') || []
     
+    // 加载所有数据，不再在此处按账户过滤
     // 处理数据格式
     const processedStocks = stocks.map(stock => {
       const processedStock = { ...stock }
@@ -41,12 +47,17 @@ Page({
       processedStock.createTimeStr = this.formatDate(stock.createTime)
       
       // 计算收益率
-      if (stock.sellPrice > 0 && stock.costPrice > 0) {
-        const costAmount = stock.costPrice * (stock.sellShares || stock.winningShares || 0)
+      if (stock.sellPrice > 0 && stock.issuePrice > 0) {
+        const costAmount = stock.issuePrice * (stock.sellShares || stock.winningShares || 0)
         processedStock.profitRate = costAmount > 0 ? ((stock.profit / costAmount) * 100).toFixed(2) : 0
       } else {
         processedStock.profitRate = 0
       }
+      
+      // 添加账户名称显示
+      const accountId = stock.accountId || 'default'
+      const account = this.data.accountList.find(acc => acc.id === accountId)
+      processedStock.accountName = account ? account.name : '默认账户'
       
       return processedStock
     })
@@ -59,6 +70,11 @@ Page({
     })
 
     this.filterAndDisplayData()
+    
+    console.log('历史记录页面数据加载:', {
+      totalStocks: stocks.length,
+      processedStocks: processedStocks.length
+    })
   },
 
   formatDate(timestamp) {
@@ -85,7 +101,16 @@ Page({
 
   onStatusFilterChange(e) {
     this.setData({
-      statusFilterIndex: parseInt(e.detail.value)
+      statusFilterIndex: parseInt(e.detail.value),
+      currentPage: 1
+    })
+    this.filterAndDisplayData()
+  },
+
+  onAccountFilterChange(e) {
+    this.setData({
+      accountFilterIndex: parseInt(e.detail.value),
+      currentPage: 1
     })
     this.filterAndDisplayData()
   },
@@ -95,6 +120,7 @@ Page({
       startDate: '',
       endDate: '',
       statusFilterIndex: 0,
+      accountFilterIndex: 0,
       currentPage: 1
     })
     this.filterAndDisplayData()
@@ -121,6 +147,19 @@ Page({
       filtered = filtered.filter(stock => stock.status === statusValue)
     }
 
+    // 账户筛选
+    const accountFilter = this.data.accountFilterOptions[this.data.accountFilterIndex]
+    if (accountFilter !== '全部') {
+      // 根据账户名称找到对应的账户ID
+      const selectedAccount = this.data.accountList.find(acc => acc.name === accountFilter)
+      if (selectedAccount) {
+        filtered = filtered.filter(stock => {
+          const stockAccountId = stock.accountId || 'default'
+          return stockAccountId === selectedAccount.id
+        })
+      }
+    }
+
     // 计算统计信息
     const stats = this.calculateStats(filtered)
 
@@ -134,6 +173,14 @@ Page({
       filteredStocks: displayStocks, // 修改：直接显示分页后的数据
       hasMore: hasMore,
       filteredStats: stats
+    })
+
+    console.log('数据筛选结果:', {
+      total: this.data.allStocks.length,
+      filtered: filtered.length,
+      displayed: displayStocks.length,
+      accountFilter: accountFilter,
+      statusFilter: this.data.statusFilterOptions[this.data.statusFilterIndex]
     })
   },
 
@@ -189,6 +236,39 @@ Page({
   addNewStock() {
     wx.navigateTo({
       url: '/pages/add-stock/add-stock'
+    })
+  },
+
+  // 初始化账户选项
+  initializeAccounts() {
+    const accounts = wx.getStorageSync('accounts') || []
+    
+    // 如果没有账户，创建默认账户
+    if (accounts.length === 0) {
+      const defaultAccount = {
+        id: 'default',
+        name: '默认账户',
+        isDefault: true,
+        createTime: new Date().getTime()
+      }
+      accounts.push(defaultAccount)
+      wx.setStorageSync('accounts', accounts)
+    }
+
+    // 构建账户筛选选项
+    const accountOptions = ['全部']
+    accounts.forEach(account => {
+      accountOptions.push(account.name)
+    })
+
+    this.setData({
+      accountList: accounts,
+      accountFilterOptions: accountOptions
+    })
+
+    console.log('初始化账户选项:', {
+      accounts: accounts,
+      accountOptions: accountOptions
     })
   }
 })

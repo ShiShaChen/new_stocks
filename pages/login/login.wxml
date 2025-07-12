@@ -8,10 +8,10 @@
   
   <view class="login-content">
     <!-- 未授权状态 -->
-    <view wx:if="{{!hasUserInfo}}" class="auth-section">
+    <view wx:if="{{!hasUserInfo && !showManualAuth}}" class="auth-section">
       <view class="auth-tips">
         <text class="tip-title">欢迎使用打新记录</text>
-        <text class="tip-desc">需要获取您的微信信息来提供个性化服务</text>
+        <text class="tip-desc">需要设置您的个人信息来提供个性化服务</text>
         <view class="feature-list">
           <text class="feature-item">• 记录个人打新数据</text>
           <text class="feature-item">• 自动计算盈亏情况</text>
@@ -19,14 +19,20 @@
         </view>
       </view>
       
+      <view class="auth-status">
+        <text class="status-text" wx:if="{{isModernWechat}}">✅ 支持快速设置头像昵称</text>
+        <text class="status-text" wx:elif="{{canIUseGetUserProfile}}">⚠️ 兼容模式（建议升级微信）</text>
+        <text class="status-text" wx:else>⚠️ 需要手动设置用户信息</text>
+      </view>
+      
       <view class="button-group">
         <button 
           class="btn-primary {{isLoading ? 'loading' : ''}}" 
-          bindtap="getUserProfile" 
+          bindtap="startLogin" 
           disabled="{{isLoading}}"
         >
-          <text wx:if="{{!isLoading}}">微信授权登录</text>
-          <text wx:else>授权中...</text>
+          <text wx:if="{{!isLoading}}">开始使用</text>
+          <text wx:else>登录中...</text>
         </button>
         
         <button 
@@ -38,6 +44,95 @@
         </button>
       </view>
     </view>
+
+    <!-- 手动设置用户信息界面 -->
+    <view wx:if="{{showManualAuth}}" class="manual-auth-section">
+      <view class="manual-auth-tips">
+        <text class="tip-title">设置个人信息</text>
+        <text class="tip-desc" wx:if="{{isModernWechat}}">请选择头像和填写昵称</text>
+        <text class="tip-desc" wx:else>请设置您的昵称（头像将使用默认图片）</text>
+      </view>
+      
+      <view class="auth-form">
+        <!-- 头像设置 -->
+        <view class="form-item">
+          <text class="form-label">头像</text>
+          <view class="avatar-section">
+            <!-- 现代版本：支持头像选择 -->
+            <button 
+              wx:if="{{isModernWechat}}"
+              class="avatar-btn" 
+              open-type="chooseAvatar" 
+              bind:chooseavatar="onChooseAvatar"
+            >
+              <image 
+                class="avatar-preview" 
+                src="{{tempAvatarUrl}}" 
+                mode="cover"
+              />
+              <view class="avatar-overlay">
+                <text class="avatar-tip">点击选择</text>
+              </view>
+            </button>
+            
+            <!-- 降级版本：显示默认头像 -->
+            <view wx:else class="avatar-fallback">
+              <image 
+                class="avatar-preview" 
+                src="{{defaultAvatarUrl}}" 
+                mode="cover"
+              />
+              <text class="avatar-tip">默认头像</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 昵称设置 -->
+        <view class="form-item">
+          <text class="form-label">昵称</text>
+          <view class="nickname-section">
+            <input 
+              class="nickname-input"
+              type="{{canIUseNickname ? 'nickname' : 'text'}}"
+              placeholder="请输入昵称（最多20个字符）"
+              value="{{tempNickname}}"
+              bindinput="onNicknameInput"
+              maxlength="20"
+              confirm-type="done"
+            />
+            <text class="nickname-hint" wx:if="{{canIUseNickname}}">支持快速选择微信昵称</text>
+            <text class="nickname-hint" wx:else>需要手动输入昵称</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="button-group">
+        <button 
+          class="btn-primary" 
+          bindtap="confirmUserInfo"
+          disabled="{{!tempNickname || isLoading}}"
+        >
+          <text wx:if="{{!isLoading}}">确认设置</text>
+          <text wx:else>设置中...</text>
+        </button>
+        
+        <button 
+          class="btn-outline" 
+          bindtap="cancelSetup"
+          disabled="{{isLoading}}"
+        >
+          取消
+        </button>
+        
+        <button 
+          class="btn-secondary" 
+          bindtap="useSimulatedLogin"
+          disabled="{{isLoading}}"
+        >
+          使用游客模式
+        </button>
+      </view>
+    </view>
     
     <!-- 已授权状态 -->
     <view wx:if="{{hasUserInfo}}" class="user-section">
@@ -45,14 +140,18 @@
         <image class="avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
         <view class="user-details">
           <text class="nickname">{{userInfo.nickName}}</text>
-          <text class="welcome-text" wx:if="{{!userInfo.isSimulated}}">欢迎回来！</text>
-          <text class="welcome-text" wx:if="{{userInfo.isSimulated}}">游客模式</text>
+          <view class="user-tags">
+            <text class="tag" wx:if="{{userInfo.isGuest}}">游客模式</text>
+            <text class="tag" wx:elif="{{userInfo.isCustom}}">自定义信息</text>
+            <text class="tag" wx:else>微信授权</text>
+          </view>
+          <text class="login-time">登录时间：{{userInfo.loginTimeStr || '未知'}}</text>
         </view>
       </view>
       
       <view class="action-buttons">
         <button class="btn-primary" bindtap="enterApp">进入应用</button>
-        <button class="btn-secondary" bindtap="logout">退出登录</button>
+        <button class="btn-outline" bindtap="logout">退出登录</button>
       </view>
     </view>
   </view>

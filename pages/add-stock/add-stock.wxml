@@ -2,14 +2,28 @@
 <view class="container">
   <form bindsubmit="onSubmit">
     <view class="form-section">
+      <!-- 账户选择 -->
+      <view class="form-item">
+        <text class="form-label">所属账户 *</text>
+        <view class="account-selector" bindtap="onSelectAccount">
+          <text class="account-name">{{selectedAccount.name}}</text>
+          <text class="selector-arrow">></text>
+        </view>
+      </view>
+
       <view class="form-item">
         <text class="form-label">股票名称 *</text>
         <input class="form-input" name="stockName" placeholder="请输入股票名称" value="{{formData.stockName}}" disabled="{{readonly}}" />
       </view>
 
       <view class="form-item">
-        <text class="form-label">打新成本价 *</text>
-        <input class="form-input" name="costPrice" type="digit" placeholder="请输入成本价" value="{{formData.costPrice}}" disabled="{{readonly}}" />
+        <text class="form-label">股票发行价 *</text>
+        <input class="form-input" name="issuePrice" type="digit" placeholder="请输入发行价" value="{{formData.issuePrice}}" disabled="{{readonly}}" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">打新套餐费用 *</text>
+        <input class="form-input" name="packageFee" type="digit" placeholder="请输入套餐费用" value="{{formData.packageFee}}" disabled="{{readonly}}" />
       </view>
 
       <view class="form-item">
@@ -23,18 +37,17 @@
       </view>
 
       <view class="form-item">
-        <text class="form-label">额外成本</text>
-        <input class="form-input" name="extraCost" type="digit" placeholder="请输入额外成本" value="{{formData.extraCost}}" disabled="{{readonly}}" />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">是否融资</text>
-        <switch name="isFinancing" checked="{{formData.isFinancing}}" disabled="{{readonly}}" />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">投入总金额 *</text>
-        <input class="form-input" name="totalAmount" type="digit" placeholder="请输入投入总金额" value="{{formData.totalAmount}}" disabled="{{readonly}}" />
+        <text class="form-label">打新方法 *</text>
+        <radio-group name="subscriptionMethod" bindchange="onSubscriptionMethodChange">
+          <label class="radio-item">
+            <radio value="cash" checked="{{formData.subscriptionMethod === 'cash'}}" disabled="{{readonly}}" />
+            <text>现金</text>
+          </label>
+          <label class="radio-item">
+            <radio value="margin90" checked="{{formData.subscriptionMethod === 'margin90'}}" disabled="{{readonly}}" />
+            <text>90孖展</text>
+          </label>
+        </radio-group>
       </view>
 
       <view class="form-item" wx:if="{{isEdit}}">
@@ -61,8 +74,37 @@
         <text class="form-value">{{formData.winningShares}} 股</text>
       </view>
       <view class="form-item" wx:if="{{formData.winningTime}}">
-        <text class="form-label">中签时间</text>
-        <text class="form-value">{{formData.winningTimeStr}}</text>
+        <text class="form-label">中签日期</text>
+        <text class="form-value">{{formData.winningDateStr}}</text>
+      </view>
+      
+      <!-- 中签费用明细 -->
+      <view class="fee-details" wx:if="{{formData.winningFeeDetails}}">
+        <view class="fee-title">中签费用明细</view>
+        <view class="fee-item">
+          <text class="fee-label">印花税：</text>
+          <text class="fee-value">¥{{formData.winningFeeDetails.stampDuty}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">交易费：</text>
+          <text class="fee-value">¥{{formData.winningFeeDetails.tradingFee}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">交易征费：</text>
+          <text class="fee-value">¥{{formData.winningFeeDetails.tradingLevy}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">会财局交易征费：</text>
+          <text class="fee-value">¥{{formData.winningFeeDetails.afrcLevy}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">套餐费用：</text>
+          <text class="fee-value">¥{{formData.winningFeeDetails.packageFee}}</text>
+        </view>
+        <view class="fee-total">
+          <text class="fee-total-label">总费用：</text>
+          <text class="fee-total-value">¥{{formData.winningFeeDetails.totalFee}}</text>
+        </view>
       </view>
     </view>
 
@@ -74,14 +116,47 @@
         <text class="form-value">¥{{formData.sellPrice}}</text>
       </view>
       <view class="form-item">
+        <text class="form-label">卖出股数</text>
+        <text class="form-value">{{formData.sellShares}} 股</text>
+      </view>
+      <view class="form-item">
         <text class="form-label">盈利金额</text>
         <text class="form-value profit-{{formData.profit >= 0 ? 'positive' : 'negative'}}">
           {{formData.profit >= 0 ? '+' : ''}}{{formData.profit}}元
         </text>
       </view>
       <view class="form-item" wx:if="{{formData.sellTime}}">
-        <text class="form-label">卖出时间</text>
-        <text class="form-value">{{formData.sellTimeStr}}</text>
+        <text class="form-label">卖出日期</text>
+        <text class="form-value">{{formData.sellDateStr}}</text>
+      </view>
+      
+      <!-- 卖出费用明细 -->
+      <view class="fee-details" wx:if="{{formData.sellFeeDetails}}">
+        <view class="fee-title">卖出费用明细</view>
+        <view class="fee-item">
+          <text class="fee-label">佣金：</text>
+          <text class="fee-value">¥{{formData.sellFeeDetails.commission}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">印花税：</text>
+          <text class="fee-value">¥{{formData.sellFeeDetails.stampDuty}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">交易徵费：</text>
+          <text class="fee-value">¥{{formData.sellFeeDetails.tradingLevy}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">交易费：</text>
+          <text class="fee-value">¥{{formData.sellFeeDetails.tradingFee}}</text>
+        </view>
+        <view class="fee-item">
+          <text class="fee-label">结算费：</text>
+          <text class="fee-value">¥{{formData.sellFeeDetails.settlementFee}}</text>
+        </view>
+        <view class="fee-total">
+          <text class="fee-total-label">总费用：</text>
+          <text class="fee-total-value">¥{{formData.sellFeeDetails.totalFee}}</text>
+        </view>
       </view>
     </view>
 
@@ -110,4 +185,63 @@
       </view>
     </view>
   </form>
+
+  <!-- 账户选择弹窗 -->
+  <view class="account-modal" wx:if="{{showAccountModal}}" bindtap="onCloseAccountModal">
+    <view class="modal-content" catchtap>
+      <view class="modal-header">
+        <text class="modal-title">选择账户</text>
+        <button class="add-account-btn" bindtap="onAddAccount">+ 新增账户</button>
+      </view>
+      
+      <view class="account-list">
+        <view 
+          class="account-item {{selectedAccount.id === item.id ? 'active' : ''}}" 
+          wx:for="{{accountList}}" 
+          wx:key="id"
+          bindtap="onChooseAccount"
+          data-account="{{item}}"
+        >
+          <view class="account-info">
+            <text class="account-name">{{item.name}}</text>
+            <text class="account-desc" wx:if="{{item.isDefault}}">默认账户</text>
+          </view>
+          <text class="check-icon" wx:if="{{selectedAccount.id === item.id}}">✓</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 新增账户弹窗 -->
+  <view class="add-account-modal" wx:if="{{showAddAccountModal}}" bindtap="onCloseAddAccountModal">
+    <view class="modal-content" catchtap>
+      <view class="modal-header">
+        <text class="modal-title">新增账户</text>
+      </view>
+      
+      <view class="form-section">
+        <view class="form-item">
+          <text class="form-label">账户名称</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入账户名称" 
+            value="{{newAccountName}}"
+            bindinput="onNewAccountNameChange"
+            maxlength="20"
+          />
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="onCloseAddAccountModal">取消</button>
+        <button 
+          class="btn-confirm" 
+          bindtap="onCreateAccount"
+          disabled="{{!newAccountName}}"
+        >
+          创建
+        </button>
+      </view>
+    </view>
+  </view>
 </view>

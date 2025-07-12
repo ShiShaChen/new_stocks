@@ -1,7 +1,7 @@
 /* pages/history/history.wxss */
 .container {
   background-color: #f8f9fa;
-  min-height: 100vh;
+  width: 100%;
   padding-bottom: 100rpx;
 }
 
@@ -30,7 +30,7 @@
   white-space: nowrap;
 }
 
-.date-picker, .status-picker {
+.date-picker, .status-picker, .account-picker {
   border: 1rpx solid #ddd;
   border-radius: 8rpx;
   padding: 15rpx 20rpx;
@@ -39,6 +39,18 @@
   background: #fff;
   min-width: 140rpx;
   text-align: center;
+}
+
+.status-picker {
+  color: #007aff;
+  font-size: 28rpx;
+  padding: 10rpx 15rpx;
+}
+
+.account-picker {
+  color: #007aff;
+  font-size: 28rpx;
+  padding: 10rpx 15rpx;
 }
 
 .filter-separator {
@@ -59,6 +71,7 @@
 
 .stats-section {
   background: white;
+  width: 80%;
   display: flex;
   padding: 40rpx 30rpx;
   margin: 20rpx 30rpx;
@@ -93,46 +106,44 @@
 }
 
 .stock-list {
-  margin: 0 30rpx;
+  margin: 0 0rpx;
+  width: 85%;
 }
 
 .stock-item {
+  display: flex;
+  flex-direction: column;
   background: white;
   border-radius: 20rpx;
-  padding: 30rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
 }
 
 .stock-header {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  align-items: flex-start;
   margin-bottom: 25rpx;
-  gap: 20rpx;
-}
-
-.stock-name-row {
-  flex: 1;
-  min-width: 0;
+  align-items: center; /* 垂直居中对齐 */
+  margin-bottom: 25rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .stock-name {
   font-size: 32rpx;
   font-weight: bold;
   color: #333;
-  word-wrap: break-word;
-  word-break: break-all;
-  line-height: 1.4;
-  display: block;
 }
 
-.stock-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10rpx;
-  flex-shrink: 0;
+.stock-account {
+  font-size: 22rpx;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  margin: 0 10rpx;
+  white-space: nowrap;
 }
 
 .stock-status {
@@ -159,6 +170,7 @@
 }
 
 .stock-details {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 15rpx;
@@ -166,6 +178,8 @@
 
 .detail-row {
   display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
   gap: 30rpx;
 }
