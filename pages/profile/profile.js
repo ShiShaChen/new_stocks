@@ -6,7 +6,12 @@ Page({
     accountList: [],
     showAccountModal: false,
     showAddAccountModal: false,
-    editingAccount: {}
+    editingAccount: {},
+    // 新增：用户信息编辑相关
+    showUserInfoModal: false,
+    tempAvatarUrl: '',
+    tempNickname: '',
+    defaultAvatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
   },
 
   onLoad() {
@@ -75,6 +80,111 @@ Page({
         userInfo: userInfo
       })
     }
+  },
+
+  // 修改用户信息
+  editUserInfo() {
+    const { userInfo } = this.data
+    this.setData({
+      showUserInfoModal: true,
+      tempAvatarUrl: userInfo?.avatarUrl || this.data.defaultAvatarUrl,
+      tempNickname: userInfo?.nickName || ''
+    })
+    
+    // 防止页面滚动
+    wx.pageScrollTo({
+      scrollTop: 0,
+      duration: 0
+    })
+  },
+
+  // 选择头像
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail
+    console.log('用户选择头像:', avatarUrl)
+    
+    this.setData({
+      tempAvatarUrl: avatarUrl
+    })
+  },
+
+  // 输入昵称
+  onNicknameInput(e) {
+    const nickname = e.detail.value.trim()
+    console.log('用户输入昵称:', nickname)
+    
+    this.setData({
+      tempNickname: nickname
+    })
+  },
+
+  // 确认修改用户信息
+  confirmUserInfo() {
+    const { tempAvatarUrl, tempNickname, userInfo } = this.data
+    
+    // 验证输入
+    if (!tempNickname || tempNickname.length < 1) {
+      wx.showToast({
+        title: '请输入昵称',
+        icon: 'error'
+      })
+      return
+    }
+    
+    if (tempNickname.length > 20) {
+      wx.showToast({
+        title: '昵称不能超过20个字符',
+        icon: 'error'
+      })
+      return
+    }
+    
+    try {
+      // 更新用户信息
+      const updatedUserInfo = {
+        ...userInfo,
+        nickName: tempNickname,
+        avatarUrl: tempAvatarUrl,
+        lastUpdateTime: Date.now(),
+        lastUpdateTimeStr: new Date().toLocaleString(),
+        isQuickLogin: false // 标记为已自定义
+      }
+      
+      // 保存到本地和全局
+      wx.setStorageSync('userInfo', updatedUserInfo)
+      const app = getApp()
+      app.setUserInfo(updatedUserInfo)
+      
+      // 更新页面状态
+      this.setData({
+        userInfo: updatedUserInfo,
+        showUserInfoModal: false
+      })
+      
+      wx.showToast({
+        title: '修改成功',
+        icon: 'success'
+      })
+      
+      console.log('用户信息修改成功:', updatedUserInfo.nickName)
+      
+    } catch (error) {
+      console.error('修改用户信息失败:', error)
+      wx.showToast({
+        title: '修改失败，请重试',
+        icon: 'error'
+      })
+    }
+  },
+
+  // 取消修改用户信息
+  cancelUserInfo() {
+    this.setData({
+      showUserInfoModal: false,
+      tempAvatarUrl: '',
+      tempNickname: ''
+    })
+    console.log('取消修改用户信息')
   },
 
   // 切换账户
@@ -297,6 +407,80 @@ Page({
       content: '如有问题或建议，请联系开发者。感谢您的使用！',
       showCancel: false,
       confirmText: '好的'
+    })
+  },
+
+  // 显示用户信息编辑弹窗
+  onEditUserInfo() {
+    this.setData({
+      showUserInfoModal: true,
+      tempNickname: this.data.userInfo.nickname || '',
+      tempAvatarUrl: this.data.userInfo.avatarUrl || this.data.defaultAvatarUrl
+    })
+  },
+
+  // 关闭用户信息编辑弹窗
+  onCloseUserInfoModal() {
+    this.setData({
+      showUserInfoModal: false
+    })
+  },
+
+  // 显示相册选择器
+  onChooseAvatar() {
+    const that = this
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['album', 'camera'],
+      success(res) {
+        // tempFilePath可以作为img标签的src属性显示图片
+        const tempFilePath = res.tempFilePaths[0]
+        
+        that.setData({
+          tempAvatarUrl: tempFilePath
+        })
+      }
+    })
+  },
+
+  // 显示昵称输入框
+  onNicknameInput(e) {
+    this.setData({
+      tempNickname: e.detail.value
+    })
+  },
+
+  // 保存用户信息
+  onSaveUserInfo() {
+    const { tempNickname, tempAvatarUrl } = this.data
+    
+    if (!tempNickname || tempNickname.trim() === '') {
+      wx.showToast({
+        title: '请输入昵称',
+        icon: 'none'
+      })
+      return
+    }
+    
+    // 更新用户信息
+    const userInfo = {
+      ...this.data.userInfo,
+      nickname: tempNickname.trim(),
+      avatarUrl: tempAvatarUrl
+    }
+    
+    // 保存到本地
+    wx.setStorageSync('userInfo', userInfo)
+    
+    this.setData({
+      userInfo: userInfo,
+      showUserInfoModal: false
+    })
+    
+    wx.showToast({
+      title: '用户信息更新成功',
+      icon: 'success'
     })
   }
 })

@@ -7,7 +7,11 @@
       <view class="user-details">
         <text class="nickname">{{userInfo.nickName}}</text>
         <text class="user-desc">打新投资者</text>
+        <text class="login-time" wx:if="{{userInfo.loginTimeStr}}">登录时间：{{userInfo.loginTimeStr}}</text>
       </view>
+      <button class="edit-user-btn" bindtap="editUserInfo">
+        <text class="edit-icon">编辑</text>
+      </button>
     </view>
   </view>
 
@@ -133,6 +137,60 @@
           disabled="{{!editingAccount.name}}"
         >
           保存
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 修改用户信息弹窗 -->
+  <view wx:if="{{showUserInfoModal}}" class="modal-overlay">
+    <view class="auth-modal">
+      <view class="modal-header">
+        <text class="modal-title">修改个人信息</text>
+        <text class="modal-desc">请设置您的头像和昵称</text>
+      </view>
+      
+      <view class="modal-body">
+        <!-- 头像选择 -->
+        <view class="avatar-section">
+          <text class="section-label">头像</text>
+          <button 
+            class="avatar-button" 
+            open-type="chooseAvatar" 
+            bindchooseavatar="onChooseAvatar"
+          >
+            <image class="avatar-preview" src="{{tempAvatarUrl}}" mode="aspectFill"></image>
+            <view class="avatar-tips">点击选择头像</view>
+          </button>
+        </view>
+        
+        <!-- 昵称输入 -->
+        <view class="nickname-section">
+          <text class="section-label">昵称</text>
+          <input 
+            class="nickname-input" 
+            type="nickname" 
+            placeholder="请输入昵称（1-20个字符）"
+            value="{{tempNickname}}"
+            bindinput="onNicknameInput"
+            maxlength="20"
+          />
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button 
+          class="btn-cancel" 
+          bindtap="cancelUserInfo"
+        >
+          取消
+        </button>
+        <button 
+          class="btn-confirm" 
+          bindtap="confirmUserInfo"
+          disabled="{{!tempNickname}}"
+        >
+          确认修改
         </button>
       </view>
     </view>
