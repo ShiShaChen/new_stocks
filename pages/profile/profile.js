@@ -26,10 +26,53 @@ Page({
   },
 
   onShow() {
+    console.log('Profile页面显示，开始刷新数据')
+    
     // 每次显示页面时重新获取用户信息和账户信息
     this.getUserInfo()
+    
+    // 检查是否有资金变更标记
+    const fundsChanged = wx.getStorageSync('fundsChanged')
+    if (fundsChanged) {
+      wx.removeStorageSync('fundsChanged')
+      console.log('检测到资金变更，强制刷新所有数据')
+    }
+    
+    // 重新加载所有数据，确保数据最新
+    this.refreshAllData()
+  },
+
+  // 刷新所有数据的方法
+  refreshAllData() {
     this.loadAccounts()
-    this.loadFundsSummary()
+    
+    // 延迟加载当前账户，确保账户列表已更新
+    setTimeout(() => {
+      this.loadCurrentAccount()
+    }, 50)
+    
+    // 延迟加载资金信息，确保账户信息已更新
+    setTimeout(() => {
+      this.loadFundsSummary()
+      this.loadCurrentAccountFunds()
+    }, 100)
+    
+    // 再次确认加载，防止数据不同步
+    setTimeout(() => {
+      this.loadCurrentAccountFunds()
+      this.loadFundsSummary()
+    }, 300)
+  },
+
+  // 下拉刷新
+  onPullDownRefresh() {
+    console.log('用户下拉刷新')
+    this.refreshAllData()
+    
+    // 延迟停止下拉刷新动画
+    setTimeout(() => {
+      wx.stopPullDownRefresh()
+    }, 500)
   },
 
   // 初始化账户系统
@@ -99,12 +142,15 @@ Page({
     if (this.data.currentAccount && this.data.currentAccount.id) {
       try {
         const funds = fundManager.getAccountFunds(this.data.currentAccount.id)
+        console.log('加载账户资金:', this.data.currentAccount.id, funds)
         this.setData({
           currentAccountFunds: funds
         })
       } catch (error) {
         console.error('加载当前账户资金失败:', error)
       }
+    } else {
+      console.warn('当前账户信息无效，无法加载资金信息')
     }
   },
 

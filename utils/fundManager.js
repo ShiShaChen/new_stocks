@@ -6,6 +6,30 @@ class FundManager {
       accountFunds: 'accountFunds',
       businessTransactions: 'businessTransactions'
     }
+    
+    // 执行数据迁移
+    this.migrateFundsData()
+  }
+
+  // 数据迁移：确保所有账户资金数据包含frozenAmount字段
+  migrateFundsData() {
+    try {
+      const allFunds = wx.getStorageSync(this.storageKeys.accountFunds) || {}
+      let needUpdate = false
+      
+      Object.keys(allFunds).forEach(accountId => {
+        if (!allFunds[accountId].frozenAmount) {
+          allFunds[accountId].frozenAmount = { HKD: 0 }
+          needUpdate = true
+        }
+      })
+      
+      if (needUpdate) {
+        wx.setStorageSync(this.storageKeys.accountFunds, allFunds)
+      }
+    } catch (error) {
+      console.error('资金数据迁移失败:', error)
+    }
   }
 
   // 获取所有资金记录
@@ -88,6 +112,7 @@ class FundManager {
       balances: { HKD: 0 },
       totalDeposit: { HKD: 0 },
       totalWithdraw: { HKD: 0 },
+      frozenAmount: { HKD: 0 },
       lastUpdateTime: Date.now()
     }
   }
@@ -100,6 +125,7 @@ class FundManager {
       balances: { HKD: 0 },
       totalDeposit: { HKD: 0 },
       totalWithdraw: { HKD: 0 },
+      frozenAmount: { HKD: 0 },
       lastUpdateTime: Date.now()
     }
 
@@ -181,10 +207,15 @@ class FundManager {
     accounts.forEach(account => {
       const funds = this.getAccountFunds(account.id)
       
+      // 确保资金数据的完整性
+      const balanceHKD = (funds.balances && typeof funds.balances.HKD === 'number') ? funds.balances.HKD : 0
+      const depositHKD = (funds.totalDeposit && typeof funds.totalDeposit.HKD === 'number') ? funds.totalDeposit.HKD : 0
+      const withdrawHKD = (funds.totalWithdraw && typeof funds.totalWithdraw.HKD === 'number') ? funds.totalWithdraw.HKD : 0
+      
       // 累计总额（只处理港币）
-      summary.totalBalances.HKD += funds.balances.HKD
-      summary.totalDeposit.HKD += funds.totalDeposit.HKD
-      summary.totalWithdraw.HKD += funds.totalWithdraw.HKD
+      summary.totalBalances.HKD += balanceHKD
+      summary.totalDeposit.HKD += depositHKD
+      summary.totalWithdraw.HKD += withdrawHKD
 
       // 账户详情
       summary.accountDetails.push({
@@ -231,17 +262,32 @@ class FundManager {
 
   // 验证资金操作
   validateFundOperation(accountId, amount, currency, type) {
-    if (type === 'withdraw') {
-      const funds = this.getAccountFunds(accountId)
-      const availableAmount = funds.balances[currency] - funds.frozenAmount[currency]
-      
-      if (amount > availableAmount) {
-        throw new Error(`可用余额不足，当前可用：${this.formatAmount(availableAmount, currency)}`)
-      }
+    // 验证参数
+    if (!accountId) {
+      throw new Error('账户ID不能为空')
+    }
+    
+    if (!currency) {
+      throw new Error('币种不能为空')
     }
     
     if (amount <= 0) {
       throw new Error('金额必须大于0')
+    }
+    
+    if (type === 'withdraw') {
+      const funds = this.getAccountFunds(accountId)
+      if (!funds || !funds.balances || typeof funds.balances[currency] !== 'number') {
+        throw new Error('账户资金信息异常，请刷新后重试')
+      }
+      
+      const frozenAmount = (funds.frozenAmount && typeof funds.frozenAmount[currency] === 'number') 
+        ? funds.frozenAmount[currency] : 0
+      const availableAmount = funds.balances[currency] - frozenAmount
+      
+      if (amount > availableAmount) {
+        throw new Error(`可用余额不足，当前可用：${this.formatAmount(availableAmount, currency)}`)
+      }
     }
     
     return true

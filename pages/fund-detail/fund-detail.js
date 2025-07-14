@@ -73,13 +73,29 @@ Page({
   },
 
   onShow() {
+    console.log('资金详情页面显示，开始刷新数据')
+    
     // 检查资金数据是否更新
     const fundsChanged = wx.getStorageSync('fundsChanged')
     if (fundsChanged) {
       wx.removeStorageSync('fundsChanged')
-      this.loadAccountFunds()
-      this.loadRecords()
+      console.log('检测到资金变更，强制刷新所有数据')
     }
+    
+    // 重置分页状态并刷新数据
+    this.setData({
+      currentPage: 1,
+      hasMore: true
+    })
+    
+    // 始终刷新数据以确保最新
+    this.loadAccountFunds()
+    this.loadRecords()
+    
+    // 延迟再次刷新，确保数据同步
+    setTimeout(() => {
+      this.loadRecords()
+    }, 300)
   },
 
   // 下拉刷新
@@ -137,6 +153,7 @@ Page({
     try {
       // 获取资金记录
       const fundRecords = fundManager.getAccountFundRecords(this.data.accountId)
+      console.log('资金详情-加载资金记录:', fundRecords.length, '条记录')
       
       // 获取业务交易记录
       const businessTransactions = fundManager.getAccountBusinessTransactions(this.data.accountId)

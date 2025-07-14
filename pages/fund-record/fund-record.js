@@ -53,13 +53,35 @@ Page({
 
   // 加载当前账户
   loadCurrentAccount() {
-    const currentAccountId = wx.getStorageSync('currentAccountId') || 'default'
-    const accounts = wx.getStorageSync('accounts') || []
-    const currentAccount = accounts.find(acc => acc.id === currentAccountId) || accounts[0]
-    
-    this.setData({
-      currentAccount: currentAccount
-    })
+    try {
+      const currentAccountId = wx.getStorageSync('currentAccountId') || 'default'
+      const accounts = wx.getStorageSync('accounts') || []
+      let currentAccount = accounts.find(acc => acc.id === currentAccountId)
+      
+      // 如果找不到指定账户，使用第一个账户或创建默认账户
+      if (!currentAccount && accounts.length > 0) {
+        currentAccount = accounts[0]
+      } else if (!currentAccount) {
+        // 创建默认账户
+        currentAccount = {
+          id: 'default',
+          name: '默认账户'
+        }
+      }
+      
+      this.setData({
+        currentAccount: currentAccount
+      })
+    } catch (error) {
+      console.error('加载当前账户失败:', error)
+      // 设置默认账户
+      this.setData({
+        currentAccount: {
+          id: 'default',
+          name: '默认账户'
+        }
+      })
+    }
   },
 
   // 初始化日期时间
@@ -299,6 +321,16 @@ Page({
     // 验证提现时的余额
     if (this.data.type === 'withdraw' && !this.data.isEdit) {
       try {
+        // 检查当前账户信息
+        if (!this.data.currentAccount || !this.data.currentAccount.id) {
+          wx.showToast({
+            title: '账户信息异常，请重新进入页面',
+            icon: 'none',
+            duration: 3000
+          })
+          return false
+        }
+        
         fundManager.validateFundOperation(
           this.data.currentAccount.id,
           parseFloat(formData.amount),

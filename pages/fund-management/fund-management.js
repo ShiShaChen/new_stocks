@@ -20,10 +20,13 @@ Page({
   },
 
   onShow() {
+    console.log('资金管理页面显示，开始刷新数据')
+    
     // 检查是否有账户切换
     const accountChanged = wx.getStorageSync('accountChanged')
     if (accountChanged) {
       wx.removeStorageSync('accountChanged')
+      console.log('检测到账户切换，刷新账户相关数据')
       this.loadCurrentAccount()
       this.loadAccountFunds()
       this.loadRecentRecords()
@@ -33,10 +36,18 @@ Page({
     const fundsChanged = wx.getStorageSync('fundsChanged')
     if (fundsChanged) {
       wx.removeStorageSync('fundsChanged')
-      this.loadAccountFunds()
-      this.loadFundsSummary()
-      this.loadRecentRecords()
+      console.log('检测到资金变更，刷新所有数据')
     }
+    
+    // 始终刷新数据以确保最新
+    this.loadAccountFunds()
+    this.loadFundsSummary()
+    this.loadRecentRecords()
+    
+    // 延迟再次刷新，确保数据同步
+    setTimeout(() => {
+      this.loadRecentRecords()
+    }, 300)
   },
 
   // 加载当前账户
@@ -93,10 +104,14 @@ Page({
     if (this.data.currentAccount) {
       try {
         const allRecords = fundManager.getAccountFundRecords(this.data.currentAccount.id)
+        console.log('资金管理-加载资金记录:', allRecords.length, '条记录')
+        
         // 按时间倒序排列，取最近5条
         const recentRecords = allRecords
           .sort((a, b) => b.timestamp - a.timestamp)
           .slice(0, 5)
+        
+        console.log('资金管理-显示最近记录:', recentRecords.length, '条')
         
         this.setData({
           recentRecords: recentRecords
