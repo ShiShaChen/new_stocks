@@ -399,8 +399,16 @@ Page({
 
   // 显示筛选弹窗
   showFilterModal() {
+    console.log('显示筛选弹框')
     this.setData({
       showFilterModal: true
+    })
+    console.log('筛选弹框状态:', this.data.showFilterModal)
+    
+    // 防止页面滚动穿透
+    wx.pageScrollTo({
+      scrollTop: 0,
+      duration: 0
     })
   },
 
@@ -652,6 +660,14 @@ Page({
   stopPropagation() {
     // 阻止点击弹框内容时关闭弹框
   },
+
+  // 防止触摸移动导致页面滚动
+  preventTouchMove() {
+    // 阻止弹框背景的触摸移动事件，防止页面滚动
+    return false
+  },
+
+
 
   // 智能时间格式化函数
   formatSmartDate(timestamp) {

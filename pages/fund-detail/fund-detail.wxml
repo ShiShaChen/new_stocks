@@ -147,34 +147,41 @@
 </view>
 
 <!-- 精美筛选弹窗 -->
-<view class="filter-modal {{showFilterModal ? 'show' : ''}}" bindtap="closeFilterModal">
+<view class="filter-modal {{showFilterModal ? 'show' : ''}}" bindtap="closeFilterModal" catchtouchmove="preventTouchMove">
   <view class="modal-backdrop"></view>
-  <view class="modal-container" catchtap>
+  <view class="modal-container" catchtap="stopPropagation" catchtouchmove="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">筛选条件</text>
-      <button class="modal-close" bindtap="closeFilterModal">
+      <view class="modal-close" bindtap="closeFilterModal">
         <text>×</text>
-      </button>
+      </view>
     </view>
     
-    <view class="filter-content">
+    <scroll-view 
+      class="filter-content" 
+      scroll-y 
+      enhanced 
+      show-scrollbar="{{false}}"
+      enable-passive="{{false}}"
+      catchtouchmove="stopPropagation"
+    >
       <!-- 类型筛选 -->
       <view class="filter-section">
         <view class="section-title">
           <text class="title-icon">📋</text>
           <text class="title-text">记录类型</text>
         </view>
-        <view class="filter-options">
+        <view class="filter-options-horizontal">
           <button 
-            class="filter-option {{filterType === item.value ? 'active' : ''}}"
+            class="filter-option-small {{filterType === item.value ? 'active' : ''}}"
             wx:for="{{typeOptions}}"
             wx:key="value"
             bindtap="onFilterChange"
             data-field="filterType"
             data-value="{{item.value}}"
           >
-            <text class="option-text">{{item.label}}</text>
-            <view class="option-check" wx:if="{{filterType === item.value}}">✓</view>
+            <text class="option-text-small">{{item.label}}</text>
+            <view class="option-check-small" wx:if="{{filterType === item.value}}">✓</view>
           </button>
         </view>
       </view>
@@ -185,17 +192,17 @@
           <text class="title-icon">💰</text>
           <text class="title-text">币种</text>
         </view>
-        <view class="filter-options">
+        <view class="filter-options-horizontal">
           <button 
-            class="filter-option {{filterCurrency === item.value ? 'active' : ''}}"
+            class="filter-option-small {{filterCurrency === item.value ? 'active' : ''}}"
             wx:for="{{currencyOptions}}"
             wx:key="value"
             bindtap="onFilterChange"
             data-field="filterCurrency"
             data-value="{{item.value}}"
           >
-            <text class="option-text">{{item.label}}</text>
-            <view class="option-check" wx:if="{{filterCurrency === item.value}}">✓</view>
+            <text class="option-text-small">{{item.label}}</text>
+            <view class="option-check-small" wx:if="{{filterCurrency === item.value}}">✓</view>
           </button>
         </view>
       </view>
@@ -206,17 +213,17 @@
           <text class="title-icon">🎯</text>
           <text class="title-text">状态</text>
         </view>
-        <view class="filter-options">
+        <view class="filter-options-horizontal">
           <button 
-            class="filter-option {{filterStatus === item.value ? 'active' : ''}}"
+            class="filter-option-small {{filterStatus === item.value ? 'active' : ''}}"
             wx:for="{{statusOptions}}"
             wx:key="value"
             bindtap="onFilterChange"
             data-field="filterStatus"
             data-value="{{item.value}}"
           >
-            <text class="option-text">{{item.label}}</text>
-            <view class="option-check" wx:if="{{filterStatus === item.value}}">✓</view>
+            <text class="option-text-small">{{item.label}}</text>
+            <view class="option-check-small" wx:if="{{filterStatus === item.value}}">✓</view>
           </button>
         </view>
       </view>
@@ -227,21 +234,21 @@
           <text class="title-icon">📅</text>
           <text class="title-text">时间范围</text>
         </view>
-        <view class="filter-options">
+        <view class="filter-options-horizontal">
           <button 
-            class="filter-option {{dateRange === item.value ? 'active' : ''}}"
+            class="filter-option-small {{dateRange === item.value ? 'active' : ''}}"
             wx:for="{{dateOptions}}"
             wx:key="value"
             bindtap="onFilterChange"
             data-field="dateRange"
             data-value="{{item.value}}"
           >
-            <text class="option-text">{{item.label}}</text>
-            <view class="option-check" wx:if="{{dateRange === item.value}}">✓</view>
+            <text class="option-text-small">{{item.label}}</text>
+            <view class="option-check-small" wx:if="{{dateRange === item.value}}">✓</view>
           </button>
         </view>
       </view>
-    </view>
+    </scroll-view>
     
     <view class="modal-footer">
       <button class="footer-btn reset" bindtap="resetFilter">

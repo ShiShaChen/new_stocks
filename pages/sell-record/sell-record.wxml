@@ -3,10 +3,6 @@
   <!-- 股票信息展示 -->
   <view class="stock-info-card">
     <text class="stock-name">{{stockInfo.stockName}}</text>
-    <view class="cost-price-display">
-      <text class="cost-label">打新成本价：</text>
-      <text class="cost-value">¥{{stockInfo.issuePrice}}</text>
-    </view>
     <view class="stock-details">
       <text class="detail-item">申购手数：{{stockInfo.subscriptionHands}} 手</text>
       <text class="detail-item">发行价：¥{{stockInfo.issuePrice}}</text>
@@ -125,15 +121,13 @@
       </view>
 
       <view class="button-group">
-        <button type="default" formType="submit" class="btn-primary" disabled="{{!formData.sellPrice}}">
+        <view bindtap="onSaveSellRecord" class="btn-primary {{!formData.sellPrice ? 'btn-disabled' : ''}}">
           保存卖出记录
-        </button>
-        <button type="default" bindtap="onCancel" class="btn-secondary">
+        </view>
+        <view bindtap="onCancel" class="btn-secondary">
           取消
-        </button>
-        <button type="default" bindtap="finishStock" class="btn-finish">
-          结束打新
-        </button>
+        </view>
+        <view bindtap="finishStock" class="btn-finish">结束打新</view>
       </view>
     </form>
   </view>

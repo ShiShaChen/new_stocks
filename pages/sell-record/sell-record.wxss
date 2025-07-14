@@ -229,31 +229,51 @@
   padding: 30rpx;
   box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.1);
   display: flex;
-  gap: 15rpx;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
 }
 
 .btn-primary {
   background-color: #07c160;
   color: white;
   border-radius: 15rpx;
-  padding: 25rpx;
   font-size: 28rpx;
   border: none;
-  flex: 2;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .btn-primary[disabled] {
   background-color: #ccc;
 }
 
+.btn-primary.btn-disabled {
+  background-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.btn-primary:active:not(.btn-disabled) {
+  background-color: #06a84e;
+  transform: scale(0.98);
+}
+
 .btn-secondary {
   background-color: #f0f0f0;
   color: #666;
   border-radius: 15rpx;
-  padding: 25rpx;
+  min-width: 100rpx;
   font-size: 28rpx;
   border: none;
-  flex: 1;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:active {
+  background-color: #e0e0e0;
+  transform: scale(0.98);
 }
 
 .btn-finish {
@@ -263,7 +283,13 @@
   padding: 25rpx;
   font-size: 28rpx;
   border: none;
-  flex: 1;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-finish:active {
+  background-color: #e84747;
+  transform: scale(0.98);
 }
 
 .readonly-tip {

@@ -277,11 +277,10 @@ Page({
     }
   },
 
-  onSubmit(e) {
-    const formData = e.detail.value
-    const sellPrice = parseFloat(formData.sellPrice)
-    const sellShares = parseInt(formData.sellShares) || this.data.stockInfo.winningShares
-    
+  // 保存卖出记录的点击事件
+  onSaveSellRecord() {
+    // 检查卖出价格是否有效
+    const sellPrice = parseFloat(this.data.formData.sellPrice)
     if (!sellPrice || sellPrice <= 0) {
       wx.showToast({
         title: '请输入有效的卖出价格',
@@ -290,6 +289,13 @@ Page({
       return
     }
 
+    // 检查按钮是否被禁用
+    if (!this.data.formData.sellPrice) {
+      return
+    }
+
+    const sellShares = parseInt(this.data.formData.sellShares) || this.data.stockInfo.winningShares
+    
     if (sellShares > this.data.stockInfo.winningShares) {
       wx.showToast({
         title: '卖出股数超出中签股数',
