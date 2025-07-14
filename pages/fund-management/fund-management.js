@@ -106,9 +106,21 @@ Page({
         const allRecords = fundManager.getAccountFundRecords(this.data.currentAccount.id)
         console.log('资金管理-加载资金记录:', allRecords.length, '条记录')
         
-        // 按时间倒序排列，取最近5条
+        // 按时间倒序排列（最新的在前面），取最近5条
+        // 如果时间相同，则按创建时间倒序，再按ID倒序确保稳定排序
         const recentRecords = allRecords
-          .sort((a, b) => b.timestamp - a.timestamp)
+          .sort((a, b) => {
+            // 首先按业务时间倒序
+            if (b.timestamp !== a.timestamp) {
+              return b.timestamp - a.timestamp
+            }
+            // 时间相同时，按创建时间倒序
+            if (b.createTime !== a.createTime) {
+              return b.createTime - a.createTime
+            }
+            // 创建时间也相同时，按ID倒序
+            return b.id > a.id ? 1 : -1
+          })
           .slice(0, 5)
         
         console.log('资金管理-显示最近记录:', recentRecords.length, '条')

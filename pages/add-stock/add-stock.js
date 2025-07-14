@@ -326,9 +326,20 @@ Page({
       profit: 0 // 重新计算
     }
 
-    // 重新计算盈亏
+    // 重新计算盈亏（只有在没有详细费用明细时才重新计算）
     if (stockData.sellPrice > 0 && stockData.winningShares > 0) {
-      stockData.profit = this.calculateProfit(stockData)
+      // 如果是编辑模式且已有详细的费用明细，不重新计算盈亏
+      if (this.data.isEdit) {
+        const oldStock = wx.getStorageSync('stocks').find(item => item.id === this.data.stockId)
+        if (oldStock && (oldStock.winningFeeDetails || oldStock.sellFeeDetails)) {
+          console.log('保留原有的精确盈亏计算，不重新计算')
+          // 不修改profit，保留原有计算
+        } else {
+          stockData.profit = this.calculateProfit(stockData)
+        }
+      } else {
+        stockData.profit = this.calculateProfit(stockData)
+      }
     }
 
     this.saveStock(stockData)
@@ -372,7 +383,7 @@ Page({
     console.log('保存前的stocks数据长度:', stocks.length)
     
     if (this.data.isEdit) {
-      // 更新现有记录
+      // 更新现有记录 - 保留重要的费用明细字段
       const index = stocks.findIndex(item => item.id === this.data.stockId)
       console.log('找到的记录index:', index)
       
@@ -381,15 +392,28 @@ Page({
         console.log('修改前的股票数据:', {
           id: oldStock.id,
           stockName: oldStock.stockName,
-          accountId: oldStock.accountId
+          accountId: oldStock.accountId,
+          hasWinningFeeDetails: !!oldStock.winningFeeDetails,
+          hasSellFeeDetails: !!oldStock.sellFeeDetails
         })
         
-        stocks[index] = stockData
+        // 合并数据，保留费用明细
+        stocks[index] = {
+          ...stockData,
+          // 保留重要的费用明细字段
+          winningFeeDetails: oldStock.winningFeeDetails,
+          sellFeeDetails: oldStock.sellFeeDetails,
+          // 保留其他可能的资金相关字段
+          profit: oldStock.profit, // 保留原有的盈亏计算结果
+          pureProfit: oldStock.pureProfit
+        }
         
         console.log('修改后的股票数据:', {
           id: stocks[index].id,
           stockName: stocks[index].stockName,
-          accountId: stocks[index].accountId
+          accountId: stocks[index].accountId,
+          hasWinningFeeDetails: !!stocks[index].winningFeeDetails,
+          hasSellFeeDetails: !!stocks[index].sellFeeDetails
         })
       } else {
         console.error('错误：未找到要更新的记录，stockId:', this.data.stockId)

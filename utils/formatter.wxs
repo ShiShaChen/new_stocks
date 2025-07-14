@@ -14,15 +14,17 @@ function formatAmount(amount, currency, showSign) {
   // 固定使用港币符号
   var symbol = 'HK$'
   
-  // 处理正负号
+  // 处理正负号显示
   var sign = ''
+  var isNegative = num < 0
+  
   if (showSign) {
     if (num > 0) {
       sign = '+'
     }
   }
   
-  // 取绝对值
+  // 如果是负数，保留负号，不取绝对值
   var absNum = Math.abs(num)
   
   // 格式化为两位小数
@@ -48,8 +50,15 @@ function formatAmount(amount, currency, showSign) {
     result = result + intPart.charAt(i)
   }
   
-  // 组合最终结果
-  return sign + symbol + result + '.' + decPart
+  // 组合最终结果 - 处理负数显示
+  var finalResult = sign + symbol + result + '.' + decPart
+  
+  // 如果原数值为负数，在前面添加负号
+  if (isNegative) {
+    finalResult = '-' + finalResult
+  }
+  
+  return finalResult
 }
 
 // 格式化日期

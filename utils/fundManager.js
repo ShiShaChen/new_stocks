@@ -145,21 +145,39 @@ class FundManager {
     // 处理业务交易影响（只处理港币）
     const businessTransactions = this.getAccountBusinessTransactions(accountId)
     businessTransactions.forEach(transaction => {
+      const amount = transaction.amount || 0
+      const fees = transaction.fees || 0
+      const profitLoss = transaction.profitLoss || 0
+      
       if (transaction.type === 'subscribe') {
-        // 打新申购直接扣除资金（不再使用冻结）
-        funds.balances.HKD -= transaction.amount
-        funds.balances.HKD -= (transaction.fees || 0)
+        // 打新申购直接扣除资金（amount包含申购金额，fees包含手续费）
+        funds.balances.HKD -= amount
+        funds.balances.HKD -= fees
       } else if (transaction.type === 'allot') {
-        // 中签扣款（只扣港币）
-        funds.balances.HKD -= transaction.amount
-        funds.balances.HKD -= (transaction.fees || 0)
+        // 中签申购金额扣款（只扣除申购金额，手续费通过fee_deduction单独处理）
+        funds.balances.HKD -= amount
+      } else if (transaction.type === 'allot_refund') {
+        // 中签费用回滚（只回滚申购金额，手续费通过fee_refund单独处理）
+        funds.balances.HKD += amount
+      } else if (transaction.type === 'fee_deduction') {
+        // 手续费扣除
+        funds.balances.HKD -= amount
+      } else if (transaction.type === 'fee_refund') {
+        // 手续费回滚（增加余额）
+        funds.balances.HKD += amount
       } else if (transaction.type === 'sell') {
-        // 卖出增加资金（含盈亏，只处理港币）
-        funds.balances.HKD += transaction.amount
-        funds.balances.HKD += (transaction.profitLoss || 0)
-        funds.balances.HKD -= (transaction.fees || 0)
+        // 卖出收入（只增加卖出金额，不包含盈亏计算）
+        funds.balances.HKD += amount
+      } else if (transaction.type === 'sell_refund') {
+        // 卖出收入回滚（只减少卖出金额，不包含盈亏计算）
+        funds.balances.HKD -= amount
       }
     })
+
+    // 四舍五入到两位小数
+    funds.balances.HKD = Math.round(funds.balances.HKD * 100) / 100
+    funds.totalDeposit.HKD = Math.round(funds.totalDeposit.HKD * 100) / 100
+    funds.totalWithdraw.HKD = Math.round(funds.totalWithdraw.HKD * 100) / 100
 
     // 保存更新后的资金状态
     const allFunds = wx.getStorageSync(this.storageKeys.accountFunds) || {}

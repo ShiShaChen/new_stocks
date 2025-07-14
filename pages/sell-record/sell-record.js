@@ -1,4 +1,6 @@
 // pages/sell-record/sell-record.js
+const { FundManager } = require('../../utils/fundManager.js')
+
 Page({
   data: {
     stockId: '',
@@ -21,10 +23,15 @@ Page({
       tradingFee: '0.00',         // 交易费
       settlementFee: '0.00',      // 结算费
       totalFee: '0.00'            // 总费用
-    }
+    },
+    fundManager: null
   },
 
   onLoad(options) {
+    // 初始化资金管理器
+    this.setData({
+      fundManager: new FundManager()
+    })
     console.log('sell-record页面加载，参数:', options)
     
     // 确保参数类型正确，真机可能传递的是字符串
@@ -179,20 +186,24 @@ Page({
       const totalFees = buyFees + parseFloat(feeDetails.totalFee)
       console.log('中签总费用 = ' + (this.data.stockInfo.winningFeeDetails ? this.data.stockInfo.winningFeeDetails.totalFee : '未保存') + '    buyFees = ' + buyFees + '    sellFees = ' + feeDetails.totalFee)
       
-      // 净盈亏 = 卖出金额 - 成本金额 - 买入费用 - 卖出费用
-      const profit = sellAmount - costAmount - totalFees
+      // 纯盈亏 = 卖出金额 - 成本金额（不包含手续费，手续费在资金流水中单独处理）
+      const profit = sellAmount - costAmount
       
-      // 收益率
-      const profitRate = costAmount > 0 ? ((profit / costAmount) * 100).toFixed(2) : 0
+      // 净盈亏 = 纯盈亏 - 总手续费（用于显示给用户看的最终收益）
+      const netProfit = profit - totalFees
+      
+      // 收益率（基于净盈亏）
+      const profitRate = costAmount > 0 ? ((netProfit / costAmount) * 100).toFixed(2) : 0
 
       this.setData({
         sellAmount: sellAmount.toFixed(2),
         costAmount: costAmount.toFixed(2),
         buyFees: buyFees.toFixed(2),
         totalFees: totalFees.toFixed(2),
-        profit: profit.toFixed(2),
+        profit: netProfit.toFixed(2), // 显示净盈亏给用户
         profitRate: profitRate,
-        feeDetails: feeDetails
+        feeDetails: feeDetails,
+        pureProfit: profit.toFixed(2) // 保存纯盈亏用于资金计算
       })
       
       console.log('=== 卖出计算调试信息 ===')
@@ -204,9 +215,10 @@ Page({
         costAmount: costAmount.toFixed(2),
         buyFees: buyFees.toFixed(2),
         totalFees: totalFees.toFixed(2),
-        profit: profit.toFixed(2),
+        pureProfit: profit.toFixed(2), // 纯盈亏（不含手续费）
+        netProfit: netProfit.toFixed(2), // 净盈亏（含手续费）
         profitRate: profitRate,
-        note: '买入费用来自中签页面的总费用'
+        note: '纯盈亏用于资金计算，净盈亏用于用户显示'
       })
     } else {
       // 重置计算结果
@@ -216,6 +228,7 @@ Page({
         totalFees: '0.00',
         profit: 0,
         profitRate: 0,
+        pureProfit: '0.00', // 也重置纯盈亏
         feeDetails: {
           commission: '75.00',
           stampDuty: '0.00',
@@ -285,8 +298,8 @@ Page({
       return
     }
 
-    // 使用卖出日期+固定时间 12:00
-    const sellDateTime = new Date(`${this.data.formData.sellDate} 12:00`)
+    // 使用卖出日期+固定时间 14:00（卖出在中签之后）
+    const sellDateTime = new Date(`${this.data.formData.sellDate} 14:00`)
     
     this.saveSellRecord({
       sellPrice: sellPrice,
@@ -311,12 +324,125 @@ Page({
       const oldStock = stocks[stockIndex]
       console.log('修改前的股票数据:', oldStock)
       
+      // 卖出收入和手续费都不包含盈亏计算，资金流水只记录实际的收入
+      const sellAmount = Math.round(sellData.sellShares * sellData.sellPrice * 100) / 100
+      const totalFees = parseFloat(sellData.feeDetails.totalFee)
+      const netReceived = Math.round((sellAmount - totalFees) * 100) / 100
+      
+      // 检查是否为修改操作（之前已有卖出记录）
+      const isModification = oldStock.sellShares > 0
+      
+      // 处理资金流水和账户余额
+      if (this.data.fundManager && oldStock.accountId) {
+        try {
+          if (isModification) {
+            // 修改操作：先回滚之前的收入和费用，再记录新收入和费用
+            const oldSellAmount = Math.round(oldStock.sellShares * oldStock.sellPrice * 100) / 100
+            const oldTotalFees = oldStock.sellFeeDetails ? parseFloat(oldStock.sellFeeDetails.totalFee) : 0
+            
+            // 回滚之前的卖出收入（只回滚卖出金额，不包含盈亏）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'sell_refund',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: oldSellAmount,
+              fees: 0,
+              profitLoss: 0,
+              description: `修改卖出记录-回滚卖出收入 ${oldStock.stockName}`,
+              datetime: new Date().toISOString()
+            })
+            
+            // 回滚之前的手续费扣除（增加余额）
+            if (oldTotalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_refund',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: oldTotalFees,
+                fees: 0,
+                profitLoss: 0,
+                description: `修改卖出记录-回滚手续费 ${oldStock.stockName}`,
+                datetime: new Date().toISOString()
+              })
+            }
+            
+            // 记录新的卖出收入（使用当前时间戳，但保存业务日期用于显示）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'sell',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: sellAmount,
+              fees: 0,
+              profitLoss: 0,
+              description: `卖出收入 ${oldStock.stockName} ${sellData.sellShares}股 @${sellData.sellPrice}`,
+              datetime: new Date().toISOString(), // 使用当前时间戳
+              businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+            })
+            
+            // 扣除新的手续费（时间稍微延后100ms，确保显示顺序）
+            if (totalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_deduction',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: totalFees,
+                fees: 0,
+                profitLoss: 0,
+                description: `卖出手续费 ${oldStock.stockName} ${sellData.sellShares}股`,
+                datetime: new Date(Date.now() + 100).toISOString(), // 当前时间+100ms
+                businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+              })
+            }
+          } else {
+            // 新增操作：分别记录卖出收入和手续费（使用当前时间戳）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'sell',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: sellAmount,
+              fees: 0,
+              profitLoss: 0,
+              description: `卖出收入 ${oldStock.stockName} ${sellData.sellShares}股 @${sellData.sellPrice}`,
+              datetime: new Date().toISOString(), // 使用当前时间戳
+              businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+            })
+            
+            if (totalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_deduction',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: totalFees,
+                fees: 0,
+                profitLoss: 0,
+                description: `卖出手续费 ${oldStock.stockName} ${sellData.sellShares}股`,
+                datetime: new Date(Date.now() + 100).toISOString(), // 当前时间+100ms
+                businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+              })
+            }
+          }
+        } catch (error) {
+          console.error('处理资金流水失败:', error)
+          wx.showModal({
+            title: '警告',
+            content: '卖出记录已保存，但资金流水处理失败，请检查账户余额',
+            showCancel: false
+          })
+        }
+      }
+      
       stocks[stockIndex] = {
         ...stocks[stockIndex],
         sellPrice: sellData.sellPrice,
         sellShares: sellData.sellShares,
         sellTime: sellData.sellTime,
-        profit: sellData.profit,
+        profit: sellData.profit, // 净盈亏（用于显示）
         sellFeeDetails: sellData.feeDetails
       }
       

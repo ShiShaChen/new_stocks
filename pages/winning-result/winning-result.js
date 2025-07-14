@@ -1,4 +1,6 @@
 // pages/winning-result/winning-result.js
+const { FundManager } = require('../../utils/fundManager.js')
+
 Page({
   data: {
     stockId: '',
@@ -17,10 +19,15 @@ Page({
       afrcLevy: '0.00',         // 会财局交易会费
       packageFee: '0.00',       // 打新套餐费用
       totalFee: '0.00'          // 总费用
-    }
+    },
+    fundManager: null
   },
 
   onLoad(options) {
+    // 初始化资金管理器
+    this.setData({
+      fundManager: new FundManager()
+    })
     console.log('winning-result页面加载，参数:', options)
     
     // 确保参数类型正确，真机可能传递的是字符串
@@ -280,8 +287,8 @@ Page({
       return
     }
 
-    // 使用中签日期+固定时间 12:00
-    const winningDateTime = new Date(`${this.data.formData.winningDate} 12:00`)
+    // 使用中签日期+固定时间 10:00（中签在卖出之前）
+    const winningDateTime = new Date(`${this.data.formData.winningDate} 10:00`)
     
     this.saveWinningResult({
       winningShares: winningShares,
@@ -303,6 +310,113 @@ Page({
     if (stockIndex !== -1) {
       const oldStock = stocks[stockIndex]
       console.log('修改前的股票数据:', oldStock)
+      
+      // 计算中签金额和费用
+      const winningAmount = Math.round(winningData.winningShares * oldStock.issuePrice * 100) / 100
+      const totalFees = parseFloat(winningData.winningFeeDetails.totalFee)
+      const totalCost = Math.round((winningAmount + totalFees) * 100) / 100
+      
+      // 检查是否为修改操作（之前已有中签记录）
+      const isModification = oldStock.winningShares > 0
+      
+      // 处理资金流水和账户余额
+      if (this.data.fundManager && oldStock.accountId) {
+        try {
+          if (isModification) {
+            // 修改操作：先回滚之前的费用，再扣除新费用
+            const oldWinningAmount = Math.round(oldStock.winningShares * oldStock.issuePrice * 100) / 100
+            const oldTotalFees = oldStock.winningFeeDetails ? parseFloat(oldStock.winningFeeDetails.totalFee) : 0
+            
+            // 回滚之前的申购金额
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'allot_refund',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: oldWinningAmount,
+              fees: 0,
+              description: `修改中签结果-回滚申购金额 ${oldStock.stockName}`,
+              datetime: new Date().toISOString()
+            })
+            
+            // 回滚之前的手续费
+            if (oldTotalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_refund',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: oldTotalFees,
+                fees: 0,
+                description: `修改中签结果-回滚手续费 ${oldStock.stockName}`,
+                datetime: new Date().toISOString()
+              })
+            }
+            
+            // 扣除新的申购金额（使用当前时间戳，但保存业务日期用于显示）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'allot',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: winningAmount,
+              fees: 0,
+              description: `中签申购金额 ${oldStock.stockName} ${winningData.winningShares}股`,
+              datetime: new Date().toISOString(), // 使用当前时间戳
+              businessDate: new Date(winningData.winningTime).toISOString() // 保存业务日期用于显示
+            })
+            
+            // 扣除新的手续费（时间稍微延后100ms，确保显示顺序）
+            if (totalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_deduction',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: totalFees,
+                fees: 0,
+                description: `中签手续费 ${oldStock.stockName} ${winningData.winningShares}股`,
+                datetime: new Date(Date.now() + 100).toISOString(), // 当前时间+100ms
+                businessDate: new Date(winningData.winningTime).toISOString() // 保存业务日期用于显示
+              })
+            }
+          } else {
+            // 新增操作：分别记录申购金额和手续费（使用当前时间戳）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'allot',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: winningAmount,
+              fees: 0,
+              description: `中签申购金额 ${oldStock.stockName} ${winningData.winningShares}股`,
+              datetime: new Date().toISOString(), // 使用当前时间戳
+              businessDate: new Date(winningData.winningTime).toISOString() // 保存业务日期用于显示
+            })
+            
+            if (totalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_deduction',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: totalFees,
+                fees: 0,
+                description: `中签手续费 ${oldStock.stockName} ${winningData.winningShares}股`,
+                datetime: new Date(Date.now() + 100).toISOString(), // 当前时间+100ms
+                businessDate: new Date(winningData.winningTime).toISOString() // 保存业务日期用于显示
+              })
+            }
+          }
+        } catch (error) {
+          console.error('处理资金流水失败:', error)
+          wx.showModal({
+            title: '警告',
+            content: '中签结果已保存，但资金流水处理失败，请检查账户余额',
+            showCancel: false
+          })
+        }
+      }
       
       stocks[stockIndex] = {
         ...stocks[stockIndex],
