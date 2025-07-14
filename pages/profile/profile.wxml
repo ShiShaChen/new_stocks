@@ -1,4 +1,6 @@
 <!--pages/profile/profile.wxml-->
+<wxs module="formatter" src="../../utils/formatter.wxs"></wxs>
+
 <view class="container">
   <!-- 用户信息区域 -->
   <view class="user-section" wx:if="{{userInfo}}">
@@ -24,10 +26,8 @@
     </view>
   </view>
 
-  <!-- 功能菜单 -->
-  <view class="menu-section" wx:if="{{userInfo}}">
-    <!-- 当前账户显示 -->
-    <view class="current-account-section">
+     <!-- 当前账户显示 -->
+     <view class="current-account-section">
       <view class="account-header">
         <text class="section-title">当前账户</text>
         <text class="current-account-name">{{currentAccount.name}}</text>
@@ -37,10 +37,69 @@
       </button>
     </view>
 
+  <!-- 功能菜单 -->
+  <view class="menu-section" wx:if="{{userInfo}}">
+    <!-- 资金概览 -->
+    <view class="funds-overview-section">
+      <view class="funds-header">
+        <view class="funds-header-left">
+          <text class="section-title">资金概览</text>
+        </view>
+        <view class="funds-header-right">
+          <view class="funds-manage-btn" bindtap="onFundManagement">管理资金</view>
+        </view>
+      </view>
+      
+      <!-- 总资金统计 -->
+      <view class="total-funds-card" wx:if="{{fundsSummary}}">
+        <view class="total-funds-title">全部账户资金</view>
+        <view class="funds-row-center">
+          <view class="fund-item-full">
+            <text class="fund-label">港币余额</text>
+            <text class="fund-amount hkd">{{formatter.formatAmount(fundsSummary.totalBalances.HKD, 'HKD')}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 当前账户资金 -->
+      <view class="current-funds-card" wx:if="{{currentAccountFunds}}">
+        <view class="current-funds-title">{{currentAccount.name}}资金</view>
+        <view class="funds-row-center">
+          <view class="fund-item-full">
+            <text class="fund-label">港币余额</text>
+            <text class="fund-amount hkd">{{formatter.formatAmount(currentAccountFunds.balances.HKD, 'HKD')}}</text>
+          </view>
+        </view>
+        <view class="funds-quick-actions">
+          <button class="quick-action-btn deposit" bindtap="onFundRecord" data-type="deposit">
+            <text class="btn-icon">+</text>
+            <text class="btn-text">转入</text>
+          </button>
+          <button class="quick-action-btn withdraw" bindtap="onFundRecord" data-type="withdraw">
+            <text class="btn-icon">-</text>
+            <text class="btn-text">转出</text>
+          </button>
+          <button class="quick-action-btn detail" bindtap="onFundDetail">
+            <text class="btn-icon">📊</text>
+            <text class="btn-text">详情</text>
+          </button>
+        </view>
+      </view>
+    </view>
+
     <!-- 账户管理 -->
     <view class="menu-title">账户管理</view>
     
     <view class="menu-list">
+      <view class="menu-item" bindtap="onFundManagement">
+        <view class="menu-content">
+          <text class="menu-icon">💰</text>
+          <text class="menu-text">资金管理</text>
+          <text class="menu-desc">账户资金流水</text>
+        </view>
+        <text class="menu-arrow">></text>
+      </view>
+      
       <view class="menu-item" bindtap="onManageAccounts">
         <view class="menu-content">
           <text class="menu-icon">👤</text>

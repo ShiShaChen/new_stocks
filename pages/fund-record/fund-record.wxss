@@ -1,0 +1,701 @@
+/* pages/fund-record/fund-record.wxss */
+
+/* 页面容器 */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding-bottom: 120rpx;
+}
+
+/* =============== 头部区域 =============== */
+.header-wrapper {
+  position: relative;
+  padding: 120rpx 40rpx 80rpx;
+  margin-bottom: 40rpx;
+}
+
+.header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+  border-radius: 0 0 60rpx 60rpx;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+}
+
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.title-icon-wrapper {
+  width: 120rpx;
+  height: 120rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 2rpx solid rgba(255, 255, 255, 0.1);
+}
+
+.title-icon {
+  font-size: 48rpx;
+}
+
+.title-info {
+  flex: 1;
+}
+
+.main-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8rpx;
+  letter-spacing: 1rpx;
+}
+
+.sub-title {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+/* =============== 表单卡片 =============== */
+.form-wrapper {
+  margin: 0 40rpx 40rpx;
+}
+
+.form-card {
+  background: #ffffff;
+  border-radius: 32rpx;
+  padding: 48rpx 40rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid #f8f9fa;
+}
+
+.form-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.form-icon {
+  font-size: 32rpx;
+}
+
+/* 表单组 */
+.form-group {
+  margin-bottom: 48rpx;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.label-icon {
+  font-size: 32rpx;
+}
+
+.label-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.required {
+  color: #e74c3c;
+  font-size: 32rpx;
+  margin-left: 8rpx;
+}
+
+.optional {
+  color: #95a5a6;
+  font-size: 24rpx;
+  margin-left: 8rpx;
+}
+
+/* 金额输入 */
+.amount-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 24rpx;
+  border: 3rpx solid transparent;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.amount-input-wrapper:focus-within {
+  background: #ffffff;
+  border-color: #667eea;
+  box-shadow: 0 0 0 6rpx rgba(102, 126, 234, 0.1);
+}
+
+.currency-prefix {
+  padding: 32rpx 0 32rpx 32rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #667eea;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.amount-input {
+  flex: 1;
+  padding: 32rpx 32rpx 32rpx 16rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  background: transparent;
+  border: none;
+}
+
+.amount-input.error {
+  border-color: #e74c3c;
+}
+
+.input-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 32rpx;
+  right: 32rpx;
+  height: 4rpx;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2rpx;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.amount-input-wrapper:focus-within .input-decoration {
+  transform: scaleX(1);
+}
+
+/* 错误信息 */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 16rpx;
+  padding: 16rpx 24rpx;
+  background: rgba(231, 76, 60, 0.1);
+  border-radius: 16rpx;
+  border-left: 6rpx solid #e74c3c;
+}
+
+.error-icon {
+  font-size: 28rpx;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: #e74c3c;
+}
+
+/* 时间选择器 */
+.datetime-selector {
+  background: #f8f9fa;
+  border-radius: 24rpx;
+  border: 3rpx solid transparent;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.datetime-selector:active {
+  background: #ffffff;
+  border-color: #667eea;
+  box-shadow: 0 0 0 6rpx rgba(102, 126, 234, 0.1);
+}
+
+.datetime-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+}
+
+.date-time-wrapper {
+  flex: 1;
+}
+
+.selected-datetime {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.date-part,
+.time-part {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.date-icon,
+.time-icon {
+  font-size: 24rpx;
+}
+
+.date-text,
+.time-text {
+  font-size: 30rpx;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.placeholder-datetime {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx 0;
+}
+
+.placeholder-icon {
+  font-size: 28rpx;
+  opacity: 0.6;
+}
+
+.placeholder-text {
+  font-size: 32rpx;
+  color: #95a5a6;
+  font-weight: 500;
+}
+
+.selector-arrow {
+  margin-left: 16rpx;
+}
+
+.arrow-icon {
+  font-size: 24rpx;
+  color: #95a5a6;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.datetime-selector:active .arrow-icon {
+  transform: rotate(90deg);
+}
+
+/* 文本域 */
+.textarea-wrapper {
+  position: relative;
+  background: #f8f9fa;
+  border-radius: 24rpx;
+  border: 3rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.textarea-wrapper:focus-within {
+  background: #ffffff;
+  border-color: #667eea;
+  box-shadow: 0 0 0 6rpx rgba(102, 126, 234, 0.1);
+}
+
+.description-input {
+  width: 100%;
+  padding: 32rpx;
+  font-size: 32rpx;
+  color: #2c3e50;
+  background: transparent;
+  border: none;
+  min-height: 160rpx;
+  max-height: 320rpx;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.char-counter {
+  padding: 16rpx 32rpx;
+  border-top: 2rpx solid #ecf0f1;
+}
+
+.char-count {
+  font-size: 24rpx;
+  color: #95a5a6;
+  float: right;
+}
+
+/* =============== 提示卡片 =============== */
+.tips-card {
+  margin: 0 40rpx 40rpx;
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 12rpx 40rpx rgba(253, 203, 110, 0.3);
+}
+
+.tips-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.tips-icon {
+  font-size: 40rpx;
+  margin-top: 4rpx;
+}
+
+.tips-text-wrapper {
+  flex: 1;
+}
+
+.tips-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #e17055;
+  margin-bottom: 8rpx;
+}
+
+.tips-desc {
+  font-size: 26rpx;
+  color: #e17055;
+  line-height: 1.5;
+}
+
+/* =============== 底部操作按钮 =============== */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  padding: 32rpx 40rpx;
+  border-top: 2rpx solid #f8f9fa;
+  box-shadow: 0 -10rpx 30rpx rgba(0, 0, 0, 0.1);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 24rpx;
+}
+
+.btn-secondary {
+  flex: 1;
+  height: 96rpx;
+  background: #ecf0f1;
+  border-radius: 24rpx;
+  border: none;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #7f8c8d;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:active {
+  background: #d5dbdb;
+  transform: translateY(2rpx);
+}
+
+.btn-primary {
+  flex: 2;
+  height: 96rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 0 12rpx 40rpx rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 8rpx 30rpx rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:disabled {
+  background: #bdc3c7;
+  box-shadow: none;
+}
+
+.btn-primary.deposit {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  box-shadow: 0 12rpx 40rpx rgba(46, 204, 113, 0.4);
+}
+
+.btn-primary.withdraw {
+  background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+  box-shadow: 0 12rpx 40rpx rgba(243, 156, 18, 0.4);
+}
+
+.btn-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.btn-icon {
+  font-size: 28rpx;
+  color: #ffffff;
+}
+
+/* =============== 日期时间弹窗 =============== */
+.datetime-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.datetime-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10rpx);
+}
+
+.modal-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 40rpx 40rpx 0 0;
+  max-height: 80vh;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.datetime-modal.show .modal-container {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx;
+  border-bottom: 2rpx solid #f8f9fa;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.modal-close {
+  width: 64rpx;
+  height: 64rpx;
+  background: #f8f9fa;
+  border-radius: 50%;
+  border: none;
+  font-size: 40rpx;
+  color: #7f8c8d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.datetime-picker-content {
+  padding: 40rpx;
+}
+
+/* 选择器卡片 */
+.picker-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  border: 2rpx solid #f0f0f1;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.picker-card:active {
+  border-color: #667eea;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.1);
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  background: #f8f9fa;
+  border-bottom: 2rpx solid #ecf0f1;
+}
+
+.picker-title {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.picker-icon {
+  font-size: 28rpx;
+}
+
+.picker-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.current-value {
+  font-size: 24rpx;
+  color: #667eea;
+  font-weight: 500;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.picker-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.picker-trigger:active {
+  background: #f8f9fa;
+}
+
+.trigger-text {
+  font-size: 32rpx;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.trigger-arrow {
+  font-size: 20rpx;
+  color: #95a5a6;
+  margin-left: 16rpx;
+}
+
+/* =============== 简化时间选择器 =============== */
+.simple-datetime-container {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.datetime-item {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  border: 2rpx solid rgba(102, 126, 234, 0.1);
+}
+
+.datetime-label {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.simple-picker {
+  width: 100%;
+}
+
+.picker-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid rgba(102, 126, 234, 0.1);
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.picker-icon {
+  font-size: 32rpx;
+  opacity: 0.7;
+}
+
+/* 快捷时间按钮组 */
+.quick-datetime-btns {
+  display: flex;
+  gap: 20rpx;
+  justify-content: center;
+  margin-top: 30rpx;
+  padding: 0 20rpx;
+}
+
+.quick-btn {
+  flex: 1;
+  background: rgba(102, 126, 234, 0.1) !important;
+  border: 2rpx solid rgba(102, 126, 234, 0.2) !important;
+  border-radius: 16rpx !important;
+  padding: 16rpx 8rpx !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8rpx !important;
+  height: auto !important;
+  line-height: normal !important;
+  font-size: 24rpx !important;
+  color: #667eea !important;
+  transition: all 0.3s ease;
+}
+
+.quick-btn:active {
+  background: rgba(102, 126, 234, 0.2) !important;
+  transform: translateY(2rpx);
+}
+
+.quick-btn .btn-icon {
+  font-size: 28rpx;
+  opacity: 0.8;
+}
+
+.quick-btn .btn-text {
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+/* 移除旧的复杂日期时间选择器样式 - 保持向后兼容但隐藏 */
+.datetime-modal {
+  display: none !important;
+}

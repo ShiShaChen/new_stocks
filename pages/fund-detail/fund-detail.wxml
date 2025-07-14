@@ -1,0 +1,272 @@
+<!--pages/fund-detail/fund-detail.wxml-->
+<wxs module="formatter" src="../../utils/formatter.wxs"></wxs>
+
+<view class="container">
+  <!-- 精美头部区域 -->
+  <view class="header-wrapper">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <!-- 账户信息卡片 -->
+      <view class="account-header" wx:if="{{accountFunds}}">
+        <view class="account-info">
+          <view class="account-avatar">
+            <text class="avatar-icon">💼</text>
+          </view>
+          <view class="account-details">
+            <text class="account-name">{{currentAccount.name}}</text>
+            <text class="account-subtitle">资金明细</text>
+          </view>
+        </view>
+        <button class="filter-toggle" bindtap="showFilterModal">
+          <text class="filter-icon">🎛️</text>
+          <text class="filter-text">筛选</text>
+        </button>
+      </view>
+      
+      <!-- 余额展示卡片 -->
+      <view class="balance-showcase" wx:if="{{accountFunds}}">
+        <view class="balance-main">
+          <text class="balance-label">账户余额</text>
+          <text class="balance-amount">{{formatter.formatAmount(accountFunds.balances.HKD, 'HKD')}}</text>
+        </view>
+        <view class="balance-stats">
+          <view class="stat-item">
+            <text class="stat-icon">📈</text>
+            <view class="stat-content">
+              <text class="stat-value">{{formatter.formatAmount(accountFunds.totalDeposit.HKD, 'HKD')}}</text>
+              <text class="stat-label">累计转入</text>
+            </view>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="stat-item">
+            <text class="stat-icon">📉</text>
+            <view class="stat-content">
+              <text class="stat-value">{{formatter.formatAmount(accountFunds.totalWithdraw.HKD, 'HKD')}}</text>
+              <text class="stat-label">累计转出</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 记录列表区域 -->
+  <view class="records-wrapper">
+    <!-- 列表头部 -->
+    <view class="list-header" wx:if="{{fundRecords.length > 0}}">
+      <view class="header-title">
+        <text class="title-icon">📊</text>
+        <text class="title-text">资金流水</text>
+      </view>
+      <view class="record-summary">
+        <text class="summary-count">{{fundRecords.length}}条记录</text>
+      </view>
+    </view>
+    
+    <!-- 记录卡片列表 -->
+    <view class="record-cards" wx:if="{{fundRecords.length > 0}}">
+      <view 
+        class="record-card" 
+        wx:for="{{fundRecords}}" 
+        wx:key="id"
+      >
+        <!-- 第一行：类型图标、操作类型、时间、状态 -->
+        <view class="card-row-first">
+          <view class="record-main-info">
+            <view class="type-icon {{item.amountColorClass}}">
+              <text>{{item.icon}}</text>
+            </view>
+            <view class="record-details">
+              <text class="type-name">{{item.typeText}}</text>
+              <view class="record-meta">
+                <text class="datetime-text">{{item.formattedDateTime}}</text>
+                <view class="status-badge {{item.status}}">
+                  <text class="status-text">{{item.status === 'pending' ? '处理中' : item.status === 'completed' ? '已完成' : '失败'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="amount-display">
+            <text class="amount-value {{item.amountColorClass}}">
+              {{item.recordType === 'fund' && item.type === 'deposit' ? '+' : '-'}}{{formatter.formatAmount(item.amount, item.currency)}}
+            </text>
+          </view>
+        </view>
+        
+        <!-- 第二行：备注和操作按钮 -->
+        <view class="card-row-second">
+          <!-- 备注信息 -->
+          <view class="description-section" bindtap="showDescriptionModal" data-description="{{item.description || item.displayDescription}}">
+            <text class="description-text">{{item.displayDescription}}</text>
+            <text class="expand-hint" wx:if="{{item.description && item.description.length > 20}}">...</text>
+          </view>
+          
+          <!-- 操作按钮 -->
+          <view class="action-buttons" wx:if="{{item.recordType === 'fund'}}">
+            <button class="action-btn edit" bindtap="onEditRecord" data-record="{{item}}" wx:if="{{item.status === 'pending'}}">
+              <text class="btn-icon">✏️</text>
+            </button>
+            <button class="action-btn delete" bindtap="onDeleteRecord" data-record="{{item}}">
+              <text class="btn-icon">删除</text>
+            </button>
+          </view>
+        </view>
+        
+        <!-- 业务记录标签 -->
+        <view class="business-label" wx:if="{{item.recordType === 'business'}}">
+          <text class="label-icon">🏢</text>
+          <text class="label-text">业务记录</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 加载更多 -->
+    <view class="load-more-section" wx:if="{{hasMore && fundRecords.length > 0}}">
+      <button class="load-more-btn" bindtap="loadRecords" data-append="true" loading="{{isLoading}}">
+        <text class="load-icon">{{isLoading ? '⏳' : '⬇️'}}</text>
+        <text class="load-text">{{isLoading ? '加载中...' : '加载更多'}}</text>
+      </button>
+    </view>
+    
+    <!-- 精美空状态 -->
+    <view class="empty-state" wx:if="{{fundRecords.length === 0 && !isLoading}}">
+      <view class="empty-illustration">
+        <image class="empty-image" src="/images/empty.png" mode="aspectFit"></image>
+        <view class="empty-decoration"></view>
+      </view>
+      <view class="empty-content">
+        <text class="empty-title">暂无资金记录</text>
+        <text class="empty-subtitle">开始记录您的第一笔资金流水吧</text>
+      </view>
+      <button class="empty-action-btn" bindtap="onAddRecord">
+        <text class="btn-icon">✨</text>
+        <text class="btn-text">添加记录</text>
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 精美筛选弹窗 -->
+<view class="filter-modal {{showFilterModal ? 'show' : ''}}" bindtap="closeFilterModal">
+  <view class="modal-backdrop"></view>
+  <view class="modal-container" catchtap>
+    <view class="modal-header">
+      <text class="modal-title">筛选条件</text>
+      <button class="modal-close" bindtap="closeFilterModal">
+        <text>×</text>
+      </button>
+    </view>
+    
+    <view class="filter-content">
+      <!-- 类型筛选 -->
+      <view class="filter-section">
+        <view class="section-title">
+          <text class="title-icon">📋</text>
+          <text class="title-text">记录类型</text>
+        </view>
+        <view class="filter-options">
+          <button 
+            class="filter-option {{filterType === item.value ? 'active' : ''}}"
+            wx:for="{{typeOptions}}"
+            wx:key="value"
+            bindtap="onFilterChange"
+            data-field="filterType"
+            data-value="{{item.value}}"
+          >
+            <text class="option-text">{{item.label}}</text>
+            <view class="option-check" wx:if="{{filterType === item.value}}">✓</view>
+          </button>
+        </view>
+      </view>
+      
+      <!-- 币种筛选 -->
+      <view class="filter-section">
+        <view class="section-title">
+          <text class="title-icon">💰</text>
+          <text class="title-text">币种</text>
+        </view>
+        <view class="filter-options">
+          <button 
+            class="filter-option {{filterCurrency === item.value ? 'active' : ''}}"
+            wx:for="{{currencyOptions}}"
+            wx:key="value"
+            bindtap="onFilterChange"
+            data-field="filterCurrency"
+            data-value="{{item.value}}"
+          >
+            <text class="option-text">{{item.label}}</text>
+            <view class="option-check" wx:if="{{filterCurrency === item.value}}">✓</view>
+          </button>
+        </view>
+      </view>
+      
+      <!-- 状态筛选 -->
+      <view class="filter-section">
+        <view class="section-title">
+          <text class="title-icon">🎯</text>
+          <text class="title-text">状态</text>
+        </view>
+        <view class="filter-options">
+          <button 
+            class="filter-option {{filterStatus === item.value ? 'active' : ''}}"
+            wx:for="{{statusOptions}}"
+            wx:key="value"
+            bindtap="onFilterChange"
+            data-field="filterStatus"
+            data-value="{{item.value}}"
+          >
+            <text class="option-text">{{item.label}}</text>
+            <view class="option-check" wx:if="{{filterStatus === item.value}}">✓</view>
+          </button>
+        </view>
+      </view>
+      
+      <!-- 时间筛选 -->
+      <view class="filter-section">
+        <view class="section-title">
+          <text class="title-icon">📅</text>
+          <text class="title-text">时间范围</text>
+        </view>
+        <view class="filter-options">
+          <button 
+            class="filter-option {{dateRange === item.value ? 'active' : ''}}"
+            wx:for="{{dateOptions}}"
+            wx:key="value"
+            bindtap="onFilterChange"
+            data-field="dateRange"
+            data-value="{{item.value}}"
+          >
+            <text class="option-text">{{item.label}}</text>
+            <view class="option-check" wx:if="{{dateRange === item.value}}">✓</view>
+          </button>
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="footer-btn reset" bindtap="resetFilter">
+        <text class="btn-icon">🔄</text>
+        <text class="btn-text">重置</text>
+      </button>
+      <button class="footer-btn apply" bindtap="applyFilter">
+        <text class="btn-icon">✓</text>
+        <text class="btn-text">应用筛选</text>
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 备注详情弹框 -->
+<view class="description-modal {{showDescriptionModal ? 'show' : ''}}" bindtap="hideDescriptionModal">
+  <view class="modal-container" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">备注详情</text>
+      <button class="modal-close-btn" bindtap="hideDescriptionModal">
+        <text class="close-icon">✕</text>
+      </button>
+    </view>
+    <view class="modal-content">
+      <text class="full-description">{{currentDescription}}</text>
+    </view>
+  </view>
+</view>

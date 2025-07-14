@@ -6,7 +6,10 @@
     "pages/sell-record/sell-record",
     "pages/history/history",
     "pages/login/login",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/fund-management/fund-management",
+    "pages/fund-record/fund-record",
+    "pages/fund-detail/fund-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

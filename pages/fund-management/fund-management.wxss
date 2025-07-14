@@ -1,0 +1,575 @@
+/* pages/fund-management/fund-management.wxss */
+.container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* ===== 精美头部区域 ===== */
+.header-wrapper {
+  position: relative;
+  width: 80%;
+  padding: 40rpx 30rpx 40rpx;
+}
+
+.header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300rpx;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  border-radius: 0 0 50rpx 50rpx;
+}
+
+.header-content {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20rpx;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+}
+
+.title-icon {
+  font-size: 48rpx;
+  margin-right: 10rpx;
+}
+
+.title-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+}
+
+.account-selector {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 30rpx;
+  padding: 16rpx 24rpx;
+  display: flex;
+  align-items: center;
+  max-width: 250rpx;
+  color: white;
+  font-size: 26rpx;
+}
+
+.account-name {
+  margin-right: 12rpx;
+  font-weight: 500;
+}
+
+.dropdown-icon {
+  font-size: 20rpx;
+  opacity: 0.8;
+}
+
+/* ===== 余额卡片 ===== */
+.balance-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 30rpx;
+  padding: 40rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.balance-title {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.currency-badge {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: bold;
+}
+
+.balance-main {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.balance-amount {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.balance-subtitle {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.balance-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 60rpx;
+  background: linear-gradient(to bottom, transparent, #e0e0e0, transparent);
+}
+
+/* ===== 快捷操作区域 ===== */
+.quick-actions {
+  margin: 20rpx;
+  padding: 20rpx;
+  width: 95%;
+}
+
+.actions-title, .section-title-wrapper, .summary-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.section-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.section-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+}
+
+.action-grid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 10rpx;
+}
+
+.action-item {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 24rpx;
+  padding: 30rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.action-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.action-item.withdraw::before {
+  background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+}
+
+.action-item.detail::before {
+  background: linear-gradient(90deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.action-item:active {
+  transform: scale(0.95);
+}
+
+.action-icon-wrapper {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.action-item.deposit .action-icon-wrapper {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.action-item.withdraw .action-icon-wrapper {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.action-item.detail .action-icon-wrapper {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.action-icon {
+  font-size: 36rpx;
+}
+
+.action-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.action-desc {
+  font-size: 22rpx;
+  color: #666;
+}
+
+/* ===== 最近记录 ===== */
+.recent-section {
+  margin: 40rpx 30rpx;
+  width: 90%;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.view-all-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 25rpx;
+  padding: 12rpx 20rpx;
+  color: white;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  margin-left: 8rpx;
+  font-size: 20rpx;
+}
+
+.record-list {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.record-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.record-card:last-child {
+  border-bottom: none;
+}
+
+.record-left {
+  display: flex;
+  align-items: center;
+}
+
+.record-icon {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 15rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  font-size: 28rpx;
+}
+
+.record-icon.deposit {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.record-icon.withdraw {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.record-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-type {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.record-time {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.record-right {
+  text-align: right;
+}
+
+.record-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.record-amount.deposit {
+  color: #4facfe;
+}
+
+.record-amount.withdraw {
+  color: #fa709a;
+}
+
+.record-status {
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  max-width: 100rpx;
+}
+
+.record-status.completed {
+  background: #e8f5e8;
+  color: #52c41a;
+}
+
+.record-status.pending {
+  background: #fff7e6;
+  color: #faad14;
+}
+
+/* ===== 空状态 ===== */
+.empty-section {
+  margin: 80rpx 30rpx;
+  text-align: center;
+}
+
+.empty-illustration {
+  margin-bottom: 40rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  display: block;
+  margin-bottom: 30rpx;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.empty-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+}
+
+.start-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 30rpx;
+  padding: 20rpx 60rpx;
+  color: #333;
+  font-size: 28rpx;
+  font-weight: bold;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+  margin-right: 12rpx;
+  font-size: 24rpx;
+}
+
+/* ===== 账户汇总 ===== */
+.summary-section {
+  margin: 40rpx 30rpx;
+}
+
+.summary-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 24rpx;
+  padding: 30rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.summary-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+/* ===== 账户选择弹窗 ===== */
+.account-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 30rpx;
+  width: 80%;
+  max-width: 600rpx;
+  max-height: 80%;
+  overflow: hidden;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  padding: 40rpx 30rpx 20rpx;
+  text-align: center;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.account-list {
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.account-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f8f8f8;
+  transition: background-color 0.2s ease;
+}
+
+.account-item:last-child {
+  border-bottom: none;
+}
+
+.account-item.active {
+  background-color: #f0f9ff;
+}
+
+.account-item:active {
+  background-color: #f8f8f8;
+}
+
+.account-info {
+  flex: 1;
+}
+
+.account-name {
+  font-size: 30rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.account-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.check-icon {
+  font-size: 28rpx;
+  color: #4facfe;
+  font-weight: bold;
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 600rpx) {
+  .action-grid {
+    flex-direction: column;
+  }
+  
+  .balance-stats {
+    flex-direction: column;
+    gap: 20rpx;
+  }
+  
+  .stat-divider {
+    width: 60rpx;
+    height: 2rpx;
+    background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+  }
+}

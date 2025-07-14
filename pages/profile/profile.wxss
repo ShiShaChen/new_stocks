@@ -98,8 +98,8 @@
 }
 
 .menu-section {
-  margin: 30rpx;
-  width: 80%;
+  margin: 20rpx;
+  width: 95%;
 }
 
 .menu-title {
@@ -165,7 +165,8 @@
 .current-account-section {
   background: white;
   width: 80%;
-  margin-bottom: 30rpx;
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
   border-radius: 20rpx;
   padding: 40rpx 30rpx;
   box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
@@ -502,6 +503,216 @@
   outline: none;
 }
 
+/* 资金概览样式 */
+.funds-overview-section {
+  background: white;
+  width: 95%;
+  margin-bottom: 30rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+}
+
+.funds-header {
+  padding: 30rpx 30rpx 20rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.funds-header-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.funds-header-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.funds-header .section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0;
+}
+
+.funds-manage-wrapper {
+  position: absolute;
+  right: 30rpx;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.funds-manage-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 30rpx;
+  padding: 12rpx 20rpx;
+  font-size: 24rpx;
+  min-width: 100rpx;
+  max-width: 140rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.funds-manage-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
+}
+
+/* 总资金卡片 */
+.total-funds-card {
+  padding: 20rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: relative;
+}
+
+.total-funds-title {
+  font-size: 28rpx;
+  opacity: 0.9;
+  margin-bottom: 10rpx;
+  text-align: center;
+}
+
+/* 当前账户资金卡片 */
+.current-funds-card {
+  padding: 20rpx;
+  background: white;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.current-funds-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* 资金行布局 */
+.funds-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.fund-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10rpx;
+}
+
+.fund-label {
+  font-size: 22rpx;
+  opacity: 0.8;
+  margin-bottom: 8rpx;
+  color: inherit;
+}
+
+.fund-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 金额颜色 */
+.fund-amount.hkd {
+  color: #07c160;
+}
+
+.fund-amount.cny {
+  color: #ff6b6b;
+}
+
+.fund-amount.frozen {
+  color: #ffa726;
+}
+
+.total-funds-card .fund-amount {
+  color: white;
+}
+
+/* 快捷操作按钮 */
+.funds-quick-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 25rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  border-radius: 16rpx;
+  border: none;
+  min-width: 120rpx;
+  transition: all 0.3s ease;
+}
+
+.quick-action-btn.deposit {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
+
+.quick-action-btn.withdraw {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: white;
+}
+
+.quick-action-btn.detail {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #333;
+}
+
+.quick-action-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-icon {
+  font-size: 36rpx;
+  margin-bottom: 8rpx;
+  font-weight: bold;
+}
+
+.btn-text {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+/* 居中显示的资金行样式 */
+.funds-row-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5rpx;
+}
+
+.fund-item-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10rpx;
+}
+
 /* 响应式调整 */
 @media (max-height: 800rpx) {
   .auth-modal {
@@ -510,6 +721,35 @@
   
   .modal-overlay {
     padding: 20rpx;
+  }
+}
+
+@media (max-width: 600rpx) {
+  .funds-row {
+    flex-direction: column;
+    gap: 15rpx;
+  }
+  
+  .fund-item {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10rpx 0;
+  }
+  
+  .funds-quick-actions {
+    flex-direction: column;
+    gap: 15rpx;
+  }
+  
+  .quick-action-btn {
+    flex-direction: row;
+    justify-content: center;
+    min-width: auto;
+  }
+  
+  .btn-icon {
+    margin-bottom: 0;
+    margin-right: 10rpx;
   }
 }
 

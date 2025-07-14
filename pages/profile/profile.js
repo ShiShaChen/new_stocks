@@ -1,4 +1,6 @@
 // pages/profile/profile.js
+const { fundManager } = require('../../utils/fundManager')
+
 Page({
   data: {
     userInfo: null,
@@ -11,18 +13,23 @@ Page({
     showUserInfoModal: false,
     tempAvatarUrl: '',
     tempNickname: '',
-    defaultAvatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+    defaultAvatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
+    // 新增：资金管理相关
+    fundsSummary: null,
+    currentAccountFunds: null
   },
 
   onLoad() {
     this.getUserInfo()
     this.initializeAccounts()
+    this.loadFundsSummary()
   },
 
   onShow() {
     // 每次显示页面时重新获取用户信息和账户信息
     this.getUserInfo()
     this.loadAccounts()
+    this.loadFundsSummary()
   },
 
   // 初始化账户系统
@@ -70,6 +77,35 @@ Page({
     // 设置全局当前账户
     const app = getApp()
     app.globalData.currentAccount = currentAccount
+    
+    // 加载当前账户资金信息
+    this.loadCurrentAccountFunds()
+  },
+
+  // 加载资金汇总信息
+  loadFundsSummary() {
+    try {
+      const summary = fundManager.getAllAccountsFundsSummary()
+      this.setData({
+        fundsSummary: summary
+      })
+    } catch (error) {
+      console.error('加载资金汇总失败:', error)
+    }
+  },
+
+  // 加载当前账户资金信息
+  loadCurrentAccountFunds() {
+    if (this.data.currentAccount && this.data.currentAccount.id) {
+      try {
+        const funds = fundManager.getAccountFunds(this.data.currentAccount.id)
+        this.setData({
+          currentAccountFunds: funds
+        })
+      } catch (error) {
+        console.error('加载当前账户资金失败:', error)
+      }
+    }
   },
 
   // 获取用户信息
@@ -216,6 +252,9 @@ Page({
     // 更新全局当前账户
     const app = getApp()
     app.globalData.currentAccount = account
+    
+    // 重新加载资金信息
+    this.loadCurrentAccountFunds()
     
     wx.showToast({
       title: `已切换到${account.name}`,
@@ -482,5 +521,35 @@ Page({
       title: '用户信息更新成功',
       icon: 'success'
     })
+  },
+
+  // 资金管理相关方法
+  // 进入资金管理页面
+  onFundManagement() {
+    wx.navigateTo({
+      url: '/pages/fund-management/fund-management'
+    })
+  },
+
+  // 进入资金记录页面
+  onFundRecord(e) {
+    const type = e.currentTarget.dataset.type || 'deposit'
+    wx.navigateTo({
+      url: `/pages/fund-record/fund-record?type=${type}`
+    })
+  },
+
+  // 查看资金详情
+  onFundDetail() {
+    wx.navigateTo({
+      url: `/pages/fund-detail/fund-detail?accountId=${this.data.currentAccount.id}`
+    })
+  },
+
+  // 获取余额颜色样式
+  getBalanceColor(amount) {
+    if (amount > 0) return 'color: #07c160;'
+    if (amount < 0) return 'color: #fa5151;'
+    return 'color: #333;'
   }
 })

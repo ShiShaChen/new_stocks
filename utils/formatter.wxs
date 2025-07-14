@@ -1,0 +1,80 @@
+// 格式化金额 - 只支持港币
+function formatAmount(amount, currency, showSign) {
+  // 空值处理
+  if (amount === undefined || amount === null || amount === '') {
+    return 'HK$0.00'
+  }
+  
+  // 转换为数字
+  var num = parseFloat(amount)
+  if (isNaN(num)) {
+    return 'HK$0.00'
+  }
+  
+  // 固定使用港币符号
+  var symbol = 'HK$'
+  
+  // 处理正负号
+  var sign = ''
+  if (showSign) {
+    if (num > 0) {
+      sign = '+'
+    }
+  }
+  
+  // 取绝对值
+  var absNum = Math.abs(num)
+  
+  // 格式化为两位小数
+  var fixedNum = absNum.toFixed(2)
+  
+  // 分离整数和小数部分
+  var parts = fixedNum.split('.')
+  var intPart = parts[0]
+  var decPart = parts[1]
+  
+  // 添加千位分隔符
+  var result = ''
+  var len = intPart.length
+  
+  for (var i = 0; i < len; i++) {
+    // 每三位添加逗号
+    if (i > 0) {
+      var remaining = len - i
+      if (remaining % 3 === 0) {
+        result = result + ','
+      }
+    }
+    result = result + intPart.charAt(i)
+  }
+  
+  // 组合最终结果
+  return sign + symbol + result + '.' + decPart
+}
+
+// 格式化日期
+function formatDate(timestamp) {
+  if (!timestamp) {
+    return ''
+  }
+  
+  var date = getDate(timestamp)
+  var month = date.getMonth() + 1
+  var day = date.getDate()
+  var hour = date.getHours()
+  var minute = date.getMinutes()
+  
+  // 补零
+  var monthStr = month < 10 ? '0' + month : month + ''
+  var dayStr = day < 10 ? '0' + day : day + ''
+  var hourStr = hour < 10 ? '0' + hour : hour + ''
+  var minuteStr = minute < 10 ? '0' + minute : minute + ''
+  
+  return monthStr + '/' + dayStr + ' ' + hourStr + ':' + minuteStr
+}
+
+// 导出模块
+module.exports = {
+  formatAmount: formatAmount,
+  formatDate: formatDate
+}

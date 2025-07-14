@@ -1,0 +1,168 @@
+<!--pages/fund-management/fund-management.wxml-->
+<wxs module="formatter" src="../../utils/formatter.wxs"></wxs>
+
+<view class="container">
+  <!-- 精美头部区域 -->
+  <view class="header-wrapper">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <view class="header-top">
+        <view class="page-title">
+          <text class="title-icon">💰</text>
+          <text class="title-text">资金中心</text>
+        </view>
+        <button class="account-selector" bindtap="onSwitchAccount">
+          <text class="account-name">{{currentAccount.name}}</text>
+          <text class="dropdown-icon">▼</text>
+        </button>
+      </view>
+      
+      <!-- 主要余额卡片 -->
+      <view class="balance-card" wx:if="{{accountFunds}}">
+        <view class="balance-header">
+          <text class="balance-title">账户余额</text>
+          <view class="currency-badge">港币</view>
+        </view>
+        <view class="balance-main">
+          <text class="balance-amount">{{formatter.formatAmount(accountFunds.balances.HKD, 'HKD')}}</text>
+          <text class="balance-subtitle">总可用资金</text>
+        </view>
+        <view class="balance-stats">
+          <view class="stat-item">
+            <text class="stat-value">{{formatter.formatAmount(accountFunds.totalDeposit.HKD, 'HKD')}}</text>
+            <text class="stat-label">累计转入</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="stat-item">
+            <text class="stat-value">{{formatter.formatAmount(accountFunds.totalWithdraw.HKD, 'HKD')}}</text>
+            <text class="stat-label">累计转出</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷操作区域 -->
+  <view class="quick-actions">
+    <view class="actions-title">
+      <text class="section-icon">⚡</text>
+      <text class="section-text">快捷操作</text>
+    </view>
+    <view class="action-grid">
+      <button class="action-item deposit" bindtap="onDeposit">
+        <view class="action-icon-wrapper">
+          <text class="action-icon">↗️</text>
+        </view>
+        <text class="action-text">资金转入</text>
+        <text class="action-desc">银行入金</text>
+      </button>
+      
+      <button class="action-item withdraw" bindtap="onWithdraw">
+        <view class="action-icon-wrapper">
+          <text class="action-icon">↙️</text>
+        </view>
+        <text class="action-text">资金转出</text>
+        <text class="action-desc">银行出金</text>
+      </button>
+      
+      <button class="action-item detail" bindtap="onViewRecords">
+        <view class="action-icon-wrapper">
+          <text class="action-icon">📊</text>
+        </view>
+        <text class="action-text">交易明细</text>
+        <text class="action-desc">查看流水</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 最近记录 -->
+  <view class="recent-section" wx:if="{{recentRecords.length > 0}}">
+    <view class="section-header">
+      <view class="section-title-wrapper">
+        <text class="section-icon">📝</text>
+        <text class="section-text">最近记录</text>
+      </view>
+      <view class="view-all-btn" bindtap="onViewRecords">
+        <text>查看全部</text>
+        <text class="arrow">→</text>
+      </view>
+    </view>
+    
+    <view class="record-list">
+      <view 
+        class="record-card" 
+        wx:for="{{recentRecords}}" 
+        wx:key="id"
+      >
+        <view class="record-left">
+          <view class="record-icon {{item.type}}">
+            <text>{{item.type === 'deposit' ? '↗️' : '↙️'}}</text>
+          </view>
+          <view class="record-info">
+            <text class="record-type">{{item.type === 'deposit' ? '资金转入' : '资金转出'}}</text>
+            <text class="record-time">{{formatter.formatDate(item.timestamp)}}</text>
+          </view>
+        </view>
+        
+        <view class="record-right">
+          <text class="record-amount {{item.type}}">
+            {{item.type === 'deposit' ? '+' : '-'}}{{formatter.formatAmount(item.amount, item.currency)}}
+          </text>
+          <view class="record-status {{item.status}}">{{item.status === 'completed' ? '已完成' : '处理中'}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-section" wx:if="{{recentRecords.length === 0}}">
+    <view class="empty-illustration">
+      <text class="empty-icon">💳</text>
+      <text class="empty-text">暂无资金记录</text>
+      <text class="empty-desc">开始您的第一笔资金记录</text>
+    </view>
+    <button class="start-btn" bindtap="onDeposit">
+      <text class="btn-icon">+</text>
+      <text>开始记录</text>
+    </button>
+  </view>
+
+  <!-- 全部账户汇总 -->
+  <view class="summary-section" wx:if="{{fundsSummary && accountList.length > 1}}">
+    <view class="summary-header">
+      <text class="section-icon">🏦</text>
+      <text class="section-text">全部账户汇总</text>
+    </view>
+    <view class="summary-card">
+      <view class="summary-item">
+        <text class="summary-label">总资金</text>
+        <text class="summary-value">{{formatter.formatAmount(fundsSummary.totalBalances.HKD, 'HKD')}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 账户选择弹窗 -->
+<view class="account-modal" wx:if="{{showAccountSelect}}" bindtap="onCloseAccountSelect">
+  <view class="modal-content" catchtap>
+    <view class="modal-header">
+      <text class="modal-title">选择账户</text>
+    </view>
+    
+    <view class="account-list">
+      <view 
+        class="account-item {{currentAccount.id === item.id ? 'active' : ''}}" 
+        wx:for="{{accountList}}" 
+        wx:key="id"
+        bindtap="onSelectAccount"
+        data-account="{{item}}"
+      >
+        <view class="account-info">
+          <text class="account-name">{{item.name}}</text>
+          <text class="account-desc" wx:if="{{item.isDefault}}">默认账户</text>
+        </view>
+        <text class="check-icon" wx:if="{{currentAccount.id === item.id}}">✓</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,166 @@
+<!--pages/fund-record/fund-record.wxml-->
+<view class="container">
+  <!-- 精美头部区域 -->
+  <view class="header-wrapper">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <view class="header-title-section">
+        <view class="title-icon-wrapper">
+          <text class="title-icon">{{type === 'deposit' ? '💰' : '🏧'}}</text>
+        </view>
+        <view class="title-info">
+          <text class="main-title">{{isEdit ? '编辑记录' : (type === 'deposit' ? '资金转入' : '资金转出')}}</text>
+          <text class="sub-title">{{currentAccount.name}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 精美表单卡片 -->
+  <view class="form-wrapper">
+    <view class="form-card">
+      <view class="form-header">
+        <text class="form-title">{{type === 'deposit' ? '转入详情' : '转出详情'}}</text>
+        <view class="form-icon">
+          <text>{{type === 'deposit' ? '📈' : '📉'}}</text>
+        </view>
+      </view>
+
+      <!-- 金额输入 -->
+      <view class="form-group">
+        <view class="form-label">
+          <text class="label-icon">💵</text>
+          <text class="label-text">金额 (港币)</text>
+          <text class="required">*</text>
+        </view>
+        <view class="amount-input-wrapper">
+          <view class="currency-prefix">HK$</view>
+          <input 
+            class="amount-input {{errors.amount ? 'error' : ''}}"
+            type="digit"
+            placeholder="0.00"
+            value="{{formData.amount}}"
+            bindinput="onAmountInput"
+          />
+          <view class="input-decoration"></view>
+        </view>
+        <view class="error-message" wx:if="{{errors.amount}}">
+          <text class="error-icon">⚠️</text>
+          <text class="error-text">{{errors.amount}}</text>
+        </view>
+      </view>
+
+      <!-- 时间选择 -->
+      <view class="form-group">
+        <view class="form-label">
+          <text class="label-icon">🕐</text>
+          <text class="label-text">交易时间</text>
+          <text class="required">*</text>
+        </view>
+        
+        <!-- 简化的时间选择器 -->
+        <view class="simple-datetime-container">
+          <!-- 日期选择 -->
+          <view class="datetime-item">
+            <text class="datetime-label">日期</text>
+            <picker 
+              mode="date" 
+              value="{{formData.date}}" 
+              bindchange="onDateChange"
+              class="simple-picker"
+            >
+              <view class="picker-content">
+                <text class="picker-text">{{formData.date || '选择日期'}}</text>
+                <text class="picker-icon">📅</text>
+              </view>
+            </picker>
+          </view>
+          
+          <!-- 时间选择 -->
+          <view class="datetime-item">
+            <text class="datetime-label">时间</text>
+            <picker 
+              mode="time" 
+              value="{{formData.time}}" 
+              bindchange="onTimeChange"
+              class="simple-picker"
+            >
+              <view class="picker-content">
+                <text class="picker-text">{{formData.time || '选择时间'}}</text>
+                <text class="picker-icon">🕐</text>
+              </view>
+            </picker>
+          </view>
+        </view>
+        
+        <!-- 快捷时间按钮 -->
+        <view class="quick-datetime-btns">
+          <button class="quick-btn" bindtap="setCurrentDateTime" size="mini">
+            <text class="btn-icon">⏰</text>
+            <text class="btn-text">现在</text>
+          </button>
+          <button class="quick-btn" bindtap="setMorningDateTime" size="mini">
+            <text class="btn-icon">🌅</text>
+            <text class="btn-text">上午9点</text>
+          </button>
+          <button class="quick-btn" bindtap="setAfternoonDateTime" size="mini">
+            <text class="btn-icon">🌆</text>
+            <text class="btn-text">下午3点</text>
+          </button>
+        </view>
+      </view>
+
+      <!-- 描述输入 -->
+      <view class="form-group">
+        <view class="form-label">
+          <text class="label-icon">📝</text>
+          <text class="label-text">备注说明</text>
+          <text class="optional">(可选)</text>
+        </view>
+        <view class="textarea-wrapper">
+          <textarea 
+            class="description-input"
+            placeholder="添加备注说明，记录资金用途..."
+            value="{{formData.description}}"
+            bindinput="onDescriptionInput"
+            maxlength="200"
+            show-confirm-bar="{{false}}"
+          />
+          <view class="char-counter">
+            <text class="char-count">{{formData.description.length || 0}}/200</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 温馨提示卡片 -->
+  <view class="tips-card" wx:if="{{type === 'withdraw'}}">
+    <view class="tips-content">
+      <text class="tips-icon">💡</text>
+      <view class="tips-text-wrapper">
+        <text class="tips-title">温馨提示</text>
+        <text class="tips-desc">转出资金时请确保账户余额充足，避免交易失败</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作按钮 -->
+  <view class="bottom-actions">
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="onCancel">
+        <text class="btn-text">取消</text>
+      </button>
+      <button 
+        class="btn-primary {{type}}" 
+        bindtap="onSave"
+        disabled="{{!formData.amount || errors.amount}}"
+      >
+        <text class="btn-text">{{isEdit ? '更新记录' : '确认' + (type === 'deposit' ? '转入' : '转出')}}</text>
+        <text class="btn-icon">✓</text>
+      </button>
+    </view>
+  </view>
+</view>
+
+
