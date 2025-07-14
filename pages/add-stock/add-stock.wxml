@@ -82,19 +82,19 @@
       <view class="fee-details" wx:if="{{formData.winningFeeDetails}}">
         <view class="fee-title">中签费用明细</view>
         <view class="fee-item">
-          <text class="fee-label">印花税：</text>
-          <text class="fee-value">¥{{formData.winningFeeDetails.stampDuty}}</text>
+          <text class="fee-label">经纪佣金：</text>
+          <text class="fee-value">¥{{formData.winningFeeDetails.brokerageCommission || '0.00'}}</text>
         </view>
         <view class="fee-item">
-          <text class="fee-label">交易费：</text>
+          <text class="fee-label">香港联交所交易费：</text>
           <text class="fee-value">¥{{formData.winningFeeDetails.tradingFee}}</text>
         </view>
         <view class="fee-item">
-          <text class="fee-label">交易征费：</text>
+          <text class="fee-label">证监会交易会费：</text>
           <text class="fee-value">¥{{formData.winningFeeDetails.tradingLevy}}</text>
         </view>
         <view class="fee-item">
-          <text class="fee-label">会财局交易征费：</text>
+          <text class="fee-label">会财局交易会费：</text>
           <text class="fee-value">¥{{formData.winningFeeDetails.afrcLevy}}</text>
         </view>
         <view class="fee-item">
@@ -134,7 +134,7 @@
       <view class="fee-details" wx:if="{{formData.sellFeeDetails}}">
         <view class="fee-title">卖出费用明细</view>
         <view class="fee-item">
-          <text class="fee-label">佣金：</text>
+          <text class="fee-label">经纪佣金：</text>
           <text class="fee-value">¥{{formData.sellFeeDetails.commission}}</text>
         </view>
         <view class="fee-item">

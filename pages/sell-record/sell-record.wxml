@@ -66,11 +66,11 @@
         <view class="fee-details">
           <view class="fee-title">卖出费用明细</view>
           <view class="fee-item">
-            <text class="fee-label">佣金：</text>
+            <text class="fee-label">经纪佣金 (0.15%，最低¥75)：</text>
             <text class="fee-value">¥{{feeDetails.commission}}</text>
           </view>
           <view class="fee-item">
-            <text class="fee-label">印花税 (0.1%)：</text>
+            <text class="fee-label">印花税 (0.1%，向上取整)：</text>
             <text class="fee-value">¥{{feeDetails.stampDuty}}</text>
           </view>
           <view class="fee-item">

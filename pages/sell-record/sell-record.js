@@ -15,7 +15,7 @@ Page({
     profit: 0,
     profitRate: 0,
     feeDetails: {
-      commission: '75.00',        // 佣金固定75元
+      commission: '75.00',        // 经纪佣金
       stampDuty: '0.00',          // 印花税
       tradingLevy: '0.00',        // 交易徵费
       tradingFee: '0.00',         // 交易费
@@ -180,7 +180,7 @@ Page({
       console.log('中签总费用 = ' + (this.data.stockInfo.winningFeeDetails ? this.data.stockInfo.winningFeeDetails.totalFee : '未保存') + '    buyFees = ' + buyFees + '    sellFees = ' + feeDetails.totalFee)
       
       // 净盈亏 = 卖出金额 - 成本金额 - 买入费用 - 卖出费用
-      const profit = sellAmount - costAmount - buyFees - totalFees
+      const profit = sellAmount - costAmount - totalFees
       
       // 收益率
       const profitRate = costAmount > 0 ? ((profit / costAmount) * 100).toFixed(2) : 0
@@ -234,8 +234,14 @@ Page({
     const baseAmount = sellShares * sellPrice
     
     // 各项费用计算（使用精确计算避免浮点数问题）
-    const commission = 75.00  // 佣金固定75元
-    const stampDuty = Math.round(baseAmount * 0.001 * 100) / 100  // 印花税 0.1%
+    // 经纪佣金：卖出金额 * 0.15%，与75元取较高值
+    const calculatedCommission = Math.round(baseAmount * 0.0015 * 100) / 100  // 0.15%
+    const commission = Math.max(calculatedCommission, 75.00)  // 与75元取较高值
+    
+    // 印花税：卖出金额 * 0.1%，向上取整到整数
+    const calculatedStampDuty = baseAmount * 0.001  // 0.1%
+    const stampDuty = Math.ceil(calculatedStampDuty)  // 向上取整
+    
     const tradingLevy = Math.round(baseAmount * 0.0000285 * 100) / 100  // 交易徵费 0.00285%
     const tradingFee = Math.round(baseAmount * 0.0000565 * 100) / 100  // 交易费 0.00565%
     
@@ -245,7 +251,7 @@ Page({
       settlementFee = 3.00
     }
     
-    // 总费用 = 印花税 + 交易徵费 + 交易费 + 结算费 + 佣金
+    // 总费用 = 印花税 + 交易徵费 + 交易费 + 结算费 + 经纪佣金
     const totalFee = Math.round((stampDuty + tradingLevy + tradingFee + settlementFee + commission) * 100) / 100
     
     return {

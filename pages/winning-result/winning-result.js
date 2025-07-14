@@ -11,10 +11,10 @@ Page({
     calculatedAmount: '0.00',
     winningRate: '0.00',
     feeDetails: {
-      stampDuty: '0.00',        // 印花税
-      tradingFee: '0.00',       // 交易费
-      tradingLevy: '0.00',      // 交易征费
-      afrcLevy: '0.00',         // 会财局交易征费
+      brokerageCommission: '0.00', // 经纪佣金
+      tradingFee: '0.00',       // 香港联交所交易费
+      tradingLevy: '0.00',      // 证监会交易会费
+      afrcLevy: '0.00',         // 会财局交易会费
       packageFee: '0.00',       // 打新套餐费用
       totalFee: '0.00'          // 总费用
     }
@@ -225,7 +225,7 @@ Page({
         calculatedAmount: '0.00',
         winningRate: '0.00',
         feeDetails: {
-          stampDuty: '0.00',
+          brokerageCommission: '0.00',
           tradingFee: '0.00',
           tradingLevy: '0.00',
           afrcLevy: '0.00',
@@ -242,16 +242,16 @@ Page({
     const baseAmount = winningShares * issuePrice
     
     // 各项费用计算（使用精确计算避免浮点数问题）
-    const stampDuty = Math.round(baseAmount * 0.001 * 100) / 100  // 印花税 0.1%
-    const tradingFee = Math.round(baseAmount * 0.0000565 * 100) / 100  // 交易费 0.00565%
-    const tradingLevy = Math.round(baseAmount * 0.000027 * 100) / 100  // 交易征费 0.0027%
-    const afrcLevy = Math.round(baseAmount * 0.0000015 * 100) / 100  // 会财局交易征费 0.00015%
+    const brokerageCommission = Math.round(baseAmount * 0.01 * 100) / 100  // 经纪佣金 1%
+    const tradingFee = Math.round(baseAmount * 0.0000565 * 100) / 100  // 香港联交所交易费 0.00565%
+    const tradingLevy = Math.round(baseAmount * 0.000027 * 100) / 100  // 证监会交易会费 0.0027%
+    const afrcLevy = Math.round(baseAmount * 0.0000015 * 100) / 100  // 会财局交易会费 0.00015%
     
-    // 总费用
-    const totalFee = Math.round((stampDuty + tradingFee + tradingLevy + afrcLevy + packageFee) * 100) / 100
+    // 总费用（移除印花税）
+    const totalFee = Math.round((brokerageCommission + tradingFee + tradingLevy + afrcLevy + packageFee) * 100) / 100
     
     return {
-      stampDuty: stampDuty.toFixed(2),
+      brokerageCommission: brokerageCommission.toFixed(2),
       tradingFee: tradingFee.toFixed(2),
       tradingLevy: tradingLevy.toFixed(2),
       afrcLevy: afrcLevy.toFixed(2),
