@@ -14,7 +14,6 @@ Page({
       issuePrice: '',
       packageFee: '',
       subscriptionHands: '',
-      serviceFee: '0',
       subscriptionMethod: 'cash',
       status: 'ongoing',
       winningShares: 0,
@@ -311,7 +310,6 @@ Page({
       issuePrice: parseFloat(formData.issuePrice),
       packageFee: parseFloat(formData.packageFee),
       subscriptionHands: parseInt(formData.subscriptionHands),
-      serviceFee: parseFloat(formData.serviceFee) || 0,
       subscriptionMethod: formData.subscriptionMethod,
       status: formData.status || 'ongoing',
       accountId: accountId, // 确保使用最新选择的账户ID
@@ -350,7 +348,6 @@ Page({
     const sellShares = stockData.sellShares || stockData.winningShares
     const issuePrice = stockData.issuePrice
     const packageFee = stockData.packageFee
-    const serviceFee = stockData.serviceFee
     const sellFee = stockData.sellFee || 0
     const otherFee = stockData.otherFee || 0
 
@@ -361,7 +358,7 @@ Page({
       const costAmount = issuePrice * sellShares
       // 总手续费（按比例计算）
       const buyFeeRatio = sellShares / stockData.winningShares
-      const totalFees = (packageFee + serviceFee) * buyFeeRatio + sellFee + otherFee
+      const totalFees = packageFee * buyFeeRatio + sellFee + otherFee
       // 净盈亏（卖出金额 - 成本金额 - 手续费）
       return parseFloat((sellAmount - costAmount - totalFees).toFixed(2))
     }

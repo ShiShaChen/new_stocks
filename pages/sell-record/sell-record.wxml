@@ -4,9 +4,9 @@
   <view class="stock-info-card">
     <text class="stock-name">{{stockInfo.stockName}}</text>
     <view class="stock-details">
-      <text class="detail-item">申购手数：{{stockInfo.subscriptionHands}} 手</text>
+      <text class="detail-item">申购数量：{{stockInfo.subscriptionHands}} 股</text>
       <text class="detail-item">发行价：¥{{stockInfo.issuePrice}}</text>
-      <text class="detail-item">中签股数：{{stockInfo.winningShares}} 股</text>
+      <text class="detail-item">中签数：{{stockInfo.winningShares}} 股</text>
       <text class="detail-item">中签金额：¥{{winningAmount}}</text>
     </view>
   </view>
@@ -38,7 +38,7 @@
           value="{{formData.sellShares}}"
           bindinput="onSellSharesChange"
         />
-        <text class="form-tip">默认卖出全部中签股数：{{stockInfo.winningShares}} 股</text>
+        <text class="form-tip">默认卖出全部中签数：{{stockInfo.winningShares}} 股</text>
       </view>
 
       <view class="form-item">

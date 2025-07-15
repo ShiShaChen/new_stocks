@@ -4,7 +4,7 @@
   <view class="stock-info-card" wx:if="{{stockInfo.stockName}}">
     <text class="stock-name">{{stockInfo.stockName}}</text>
     <view class="stock-details">
-      <text class="detail-item">申购手数：{{stockInfo.subscriptionHands}} 手</text>
+      <text class="detail-item">申购数量：{{stockInfo.subscriptionHands}} 股</text>
       <text class="detail-item">发行价：¥{{stockInfo.issuePrice}}</text>
       <text class="detail-item">套餐费用：¥{{stockInfo.packageFee}}</text>
     </view>
@@ -21,12 +21,12 @@
     
     <form bindsubmit="onSubmit">
       <view class="form-item">
-        <text class="form-label">中签股数 *</text>
+        <text class="form-label">中签数 *</text>
         <input 
           class="form-input" 
           name="winningShares" 
           type="number" 
-          placeholder="请输入中签股数（股）" 
+          placeholder="请输入中签数（股）" 
           value="{{formData.winningShares}}"
           bindinput="onWinningSharesChange"
           bindfocus="onInputFocus"
@@ -36,7 +36,7 @@
           hold-keyboard="{{true}}"
           confirm-type="done"
         />
-        <text class="form-tip">中签股数不能超过申购股数：{{maxWinningShares}} 股</text>
+        <text class="form-tip">中签数不能超过申购股数：{{maxWinningShares}} 股</text>
       </view>
 
       <view class="form-item">
@@ -56,7 +56,7 @@
       <view class="result-preview" wx:if="{{formData.winningShares > 0}}">
         <view class="preview-title">中签结果预览</view>
         <view class="preview-item">
-          <text class="preview-label">中签股数：</text>
+          <text class="preview-label">中签数：</text>
           <text class="preview-value">{{formData.winningShares}} 股</text>
         </view>
         <view class="preview-item">

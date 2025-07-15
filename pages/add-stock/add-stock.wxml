@@ -27,13 +27,8 @@
       </view>
 
       <view class="form-item">
-        <text class="form-label">申购手数 *</text>
-        <input class="form-input" name="subscriptionHands" type="number" placeholder="请输入申购手数" value="{{formData.subscriptionHands}}" disabled="{{readonly}}" />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">打新手续费</text>
-        <input class="form-input" name="serviceFee" type="digit" placeholder="请输入手续费" value="{{formData.serviceFee}}" disabled="{{readonly}}" />
+        <text class="form-label">申购数量 *</text>
+        <input class="form-input" name="subscriptionHands" type="number" placeholder="请输入申购数量" value="{{formData.subscriptionHands}}" disabled="{{readonly}}" />
       </view>
 
       <view class="form-item">
@@ -70,7 +65,7 @@
     <view class="form-section" wx:if="{{isEdit && formData.winningShares > 0}}">
       <view class="section-title">中签信息</view>
       <view class="form-item">
-        <text class="form-label">中签股数</text>
+        <text class="form-label">中签数</text>
         <text class="form-value">{{formData.winningShares}} 股</text>
       </view>
       <view class="form-item" wx:if="{{formData.winningTime}}">
