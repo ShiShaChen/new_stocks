@@ -479,19 +479,9 @@ Page({
   onAbout() {
     wx.showModal({
       title: '关于应用',
-      content: '打新记录 v1.0\n\n帮助投资者记录和管理新股申购情况，追踪投资收益。',
+      content: 'v0.2.0\n\n资金管理优化，多账户优化，提高系统稳定性',
       showCancel: false,
       confirmText: '知道了'
-    })
-  },
-
-  // 意见反馈
-  onFeedback() {
-    wx.showModal({
-      title: '意见反馈',
-      content: '如有问题或建议，请联系开发者。感谢您的使用！',
-      showCancel: false,
-      confirmText: '好的'
     })
   },
 
