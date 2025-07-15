@@ -480,15 +480,217 @@ Page({
   },
 
   finishStock() {
+    // 检查卖出价格是否大于0
+    const sellPrice = parseFloat(this.data.formData.sellPrice)
+    if (!sellPrice || sellPrice <= 0) {
+      wx.showToast({
+        title: '请先输入有效的卖出价格',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
     wx.showModal({
       title: '确认操作',
-      content: '确定要结束这只股票的打新吗？结束后状态将变为"打新结束"',
+      content: '确定要结束这只股票的打新吗？结束后状态将变为"打新结束"。打新结束后所有信息都不能修改，请再次确认卖出价格。',
       success: (res) => {
         if (res.confirm) {
-          this.updateStockStatus('finished')
+          // 结束打新时，先保存卖出记录，再更新状态
+          this.finishStockWithSellRecord()
         }
       }
     })
+  },
+
+  finishStockWithSellRecord() {
+    console.log('结束打新并保存卖出记录')
+    
+    const sellPrice = parseFloat(this.data.formData.sellPrice)
+    const sellShares = parseInt(this.data.formData.sellShares) || this.data.stockInfo.winningShares
+    
+    if (sellShares > this.data.stockInfo.winningShares) {
+      wx.showToast({
+        title: '卖出股数超出中签股数',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 使用卖出日期+固定时间 14:00（卖出在中签之后）
+    const sellDateTime = new Date(`${this.data.formData.sellDate} 14:00`)
+    
+    const sellData = {
+      sellPrice: sellPrice,
+      sellShares: sellShares,
+      sellTime: sellDateTime.getTime(),
+      profit: parseFloat(this.data.profit),
+      feeDetails: this.data.feeDetails
+    }
+
+    console.log('保存卖出记录:', sellData)
+    console.log('当前stockId:', this.data.stockId)
+    
+    let stocks = wx.getStorageSync('stocks') || []
+    console.log('保存前的stocks数据:', stocks)
+    
+    const stockIndex = stocks.findIndex(item => item.id === this.data.stockId)
+    console.log('找到的stockIndex:', stockIndex)
+    
+    if (stockIndex !== -1) {
+      const oldStock = stocks[stockIndex]
+      console.log('修改前的股票数据:', oldStock)
+      
+      // 卖出收入和手续费都不包含盈亏计算，资金流水只记录实际的收入
+      const sellAmount = Math.round(sellData.sellShares * sellData.sellPrice * 100) / 100
+      const totalFees = parseFloat(sellData.feeDetails.totalFee)
+      const netReceived = Math.round((sellAmount - totalFees) * 100) / 100
+      
+      // 检查是否为修改操作（之前已有卖出记录）
+      const isModification = oldStock.sellShares > 0
+      
+      // 处理资金流水和账户余额
+      if (this.data.fundManager && oldStock.accountId) {
+        try {
+          if (isModification) {
+            // 修改操作：先回滚之前的收入和费用，再记录新收入和费用
+            const oldSellAmount = Math.round(oldStock.sellShares * oldStock.sellPrice * 100) / 100
+            const oldTotalFees = oldStock.sellFeeDetails ? parseFloat(oldStock.sellFeeDetails.totalFee) : 0
+            
+            // 回滚之前的卖出收入（只回滚卖出金额，不包含盈亏）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'sell_refund',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: oldSellAmount,
+              fees: 0,
+              profitLoss: 0,
+              description: `修改卖出记录-回滚卖出收入 ${oldStock.stockName}`,
+              datetime: new Date().toISOString()
+            })
+            
+            // 回滚之前的手续费扣除（增加余额）
+            if (oldTotalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_refund',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: oldTotalFees,
+                fees: 0,
+                profitLoss: 0,
+                description: `修改卖出记录-回滚手续费 ${oldStock.stockName}`,
+                datetime: new Date().toISOString()
+              })
+            }
+            
+            // 记录新的卖出收入（使用当前时间戳，但保存业务日期用于显示）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'sell',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: sellAmount,
+              fees: 0,
+              profitLoss: 0,
+              description: `卖出收入 ${oldStock.stockName} ${sellData.sellShares}股 @${sellData.sellPrice}`,
+              datetime: new Date().toISOString(), // 使用当前时间戳
+              businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+            })
+            
+            // 扣除新的手续费（时间稍微延后100ms，确保显示顺序）
+            if (totalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_deduction',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: totalFees,
+                fees: 0,
+                profitLoss: 0,
+                description: `卖出手续费 ${oldStock.stockName} ${sellData.sellShares}股`,
+                datetime: new Date(Date.now() + 100).toISOString(), // 当前时间+100ms
+                businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+              })
+            }
+          } else {
+            // 新增操作：分别记录卖出收入和手续费（使用当前时间戳）
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'sell',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: sellAmount,
+              fees: 0,
+              profitLoss: 0,
+              description: `卖出收入 ${oldStock.stockName} ${sellData.sellShares}股 @${sellData.sellPrice}`,
+              datetime: new Date().toISOString(), // 使用当前时间戳
+              businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+            })
+            
+            if (totalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_deduction',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: totalFees,
+                fees: 0,
+                profitLoss: 0,
+                description: `卖出手续费 ${oldStock.stockName} ${sellData.sellShares}股`,
+                datetime: new Date(Date.now() + 100).toISOString(), // 当前时间+100ms
+                businessDate: new Date(sellData.sellTime).toISOString() // 保存业务日期用于显示
+              })
+            }
+          }
+        } catch (error) {
+          console.error('处理资金流水失败:', error)
+          wx.showModal({
+            title: '警告',
+            content: '结束打新失败，资金流水处理出错，请检查账户余额',
+            showCancel: false
+          })
+          return
+        }
+      }
+      
+      // 保存卖出记录并更新状态为结束
+      stocks[stockIndex] = {
+        ...stocks[stockIndex],
+        sellPrice: sellData.sellPrice,
+        sellShares: sellData.sellShares,
+        sellTime: sellData.sellTime,
+        profit: sellData.profit, // 净盈亏（用于显示）
+        sellFeeDetails: sellData.feeDetails,
+        status: 'finished' // 同时更新状态为结束
+      }
+      
+      console.log('修改后的股票数据:', stocks[stockIndex])
+      
+      wx.setStorageSync('stocks', stocks)
+      console.log('卖出记录和状态已保存到本地存储')
+      
+      // 验证保存
+      const savedStocks = wx.getStorageSync('stocks') || []
+      const savedStock = savedStocks.find(item => item.id === this.data.stockId)
+      console.log('验证保存结果:', savedStock)
+      
+      wx.showToast({
+        title: '打新结束，记录已保存',
+        icon: 'success'
+      })
+
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 1500)
+    } else {
+      console.log('错误：未找到对应的股票记录')
+      wx.showToast({
+        title: '操作失败：未找到记录',
+        icon: 'error'
+      })
+    }
   },
 
   updateStockStatus(status) {
