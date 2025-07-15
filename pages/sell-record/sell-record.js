@@ -256,13 +256,10 @@ Page({
     const stampDuty = Math.ceil(calculatedStampDuty)  // 向上取整
     
     // 交易徵费：特殊计算规则 0.0027%
-    const tradingLevyRaw = baseAmount * 0.000028  // 0.0027%
-    // 四舍五入到两位小数
-    const tradingLevyRounded = Math.round(tradingLevyRaw * 100) / 100
-    // 向上取整到两位小数
-    const tradingLevyCeil = Math.ceil(tradingLevyRaw * 100) / 100
-    // 取两者中的较大值
-    const tradingLevy = Math.max(tradingLevyRounded, tradingLevyCeil)
+    const tradingLevyRaw = baseAmount * 0.000027  // 0.0027%
+    // 向上取整到两位小数，然后加上0.01
+    const tradingLevyRounded = Math.ceil(tradingLevyRaw * 100) / 100
+    const tradingLevy = tradingLevyRounded + 0.01
     
     const tradingFee = Math.round(baseAmount * 0.0000565 * 100) / 100  // 交易费 0.00565%
     
