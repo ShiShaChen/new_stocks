@@ -255,7 +255,15 @@ Page({
     const calculatedStampDuty = baseAmount * 0.001  // 0.1%
     const stampDuty = Math.ceil(calculatedStampDuty)  // 向上取整
     
-    const tradingLevy = Math.round(baseAmount * 0.0000285 * 100) / 100  // 交易徵费 0.00285%
+    // 交易徵费：特殊计算规则 0.0027%
+    const tradingLevyRaw = baseAmount * 0.000028  // 0.0027%
+    // 四舍五入到两位小数
+    const tradingLevyRounded = Math.round(tradingLevyRaw * 100) / 100
+    // 向上取整到两位小数
+    const tradingLevyCeil = Math.ceil(tradingLevyRaw * 100) / 100
+    // 取两者中的较大值
+    const tradingLevy = Math.max(tradingLevyRounded, tradingLevyCeil)
+    
     const tradingFee = Math.round(baseAmount * 0.0000565 * 100) / 100  // 交易费 0.00565%
     
     // 结算费 0.002%，最低3元

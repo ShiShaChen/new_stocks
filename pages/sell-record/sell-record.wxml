@@ -70,7 +70,7 @@
             <text class="fee-value">¥{{feeDetails.stampDuty}}</text>
           </view>
           <view class="fee-item">
-            <text class="fee-label">交易徵费 (0.00285%)：</text>
+            <text class="fee-label">交易徵费 (0.0027%，向上取整+0.01)：</text>
             <text class="fee-value">¥{{feeDetails.tradingLevy}}</text>
           </view>
           <view class="fee-item">
