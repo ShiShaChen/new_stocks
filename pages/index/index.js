@@ -111,7 +111,26 @@ Page({
         ongoingStocks.push(stock)
       } else {
         finishedStocks.push(stock)
-        totalProfit += stock.profit || 0
+        
+        // 计算实际盈亏
+        let actualProfit = 0
+        
+        if (stock.profit !== undefined && stock.profit !== null) {
+          // 如果已有profit字段，直接使用（这是中签时或卖出时计算的准确值）
+          actualProfit = stock.profit
+        } else if (stock.winningShares > 0 && stock.sellPrice > 0) {
+          // 兼容旧数据：有中签有卖出，使用默认计算
+          actualProfit = stock.profit || 0
+        } else if (stock.winningShares === 0) {
+          // 兼容旧数据：中签股数为0，只有费用支出，计算为负数
+          const totalFees = stock.winningFeeDetails ? parseFloat(stock.winningFeeDetails.totalFee || 0) : 0
+          actualProfit = -totalFees  // 费用作为负盈亏
+        } else {
+          // 其他情况使用原profit值
+          actualProfit = stock.profit || 0
+        }
+        
+        totalProfit += actualProfit
       }
     })
 

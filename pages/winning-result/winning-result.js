@@ -104,9 +104,9 @@ Page({
         maxWinningShares: maxShares
       })
 
-      // 如果已有中签记录，回显数据
+      // 如果已有中签记录，回显数据（包括中签股数为0的情况）
       console.log('=======' + stock.winningShares)
-      if (stock.winningShares > 0) {
+      if (stock.winningShares >= 0 && stock.winningTime) {
         const winningTime = new Date(stock.winningTime)
         this.setData({
           'formData.winningShares': stock.winningShares.toString(),
@@ -118,6 +118,9 @@ Page({
         wx.setNavigationBarTitle({
           title: '修改中签结果'
         })
+      } else {
+        // 即使没有中签记录，也要初始化费用计算
+        this.calculateResult()
       }
     } else {
       console.log('错误：未找到对应的股票信息')
@@ -175,7 +178,20 @@ Page({
     const value = parseInt(e.detail.value) || 0
     const maxShares = this.data.maxWinningShares
     
-    if (value > maxShares) {
+    // 允许中签股数为0（打新未中签），只检查不能超过最大值和不能为负数
+    if (value < 0) {
+      wx.showModal({
+        title: '输入错误',
+        content: '中签股数不能为负数，请重新输入',
+        showCancel: false,
+        success: () => {
+          this.setData({
+            'formData.winningShares': '0'
+          })
+          this.calculateResult()
+        }
+      })
+    } else if (value > maxShares) {
       wx.showModal({
         title: '输入错误',
         content: `中签股数不能超过申购股数${maxShares}股，请重新输入`,
@@ -202,45 +218,29 @@ Page({
     const subscriptionHands = this.data.stockInfo.subscriptionHands || 0
     const packageFee = this.data.stockInfo.packageFee || 0
     
-    if (winningShares > 0 && issuePrice > 0) {
-      // 计算中签金额
-      const calculatedAmount = (winningShares * issuePrice).toFixed(2)
-      
-      // 计算中签率
-      const isHKStock = this.isHKStock(this.data.stockInfo.stockName)
-      const totalShares = isHKStock ? subscriptionHands * 100 : subscriptionHands
-      const winningRate = totalShares > 0 ? ((winningShares / totalShares) * 100).toFixed(2) : '0.00'
-      
-      // 计算各项费用
-      const feeDetails = this.calculateFees(winningShares, issuePrice, packageFee)
-      
-      this.setData({
-        calculatedAmount: calculatedAmount,
-        winningRate: winningRate,
-        feeDetails: feeDetails
-      })
-      
-      console.log('费用计算结果:', {
-        winningShares: winningShares,
-        issuePrice: issuePrice,
-        calculatedAmount: calculatedAmount,
-        feeDetails: feeDetails
-      })
-    } else {
-      // 重置费用明细
-      this.setData({
-        calculatedAmount: '0.00',
-        winningRate: '0.00',
-        feeDetails: {
-          brokerageCommission: '0.00',
-          tradingFee: '0.00',
-          tradingLevy: '0.00',
-          afrcLevy: '0.00',
-          packageFee: '0.00',
-          totalFee: '0.00'
-        }
-      })
-    }
+    // 计算中签金额（即使为0也要显示）
+    const calculatedAmount = (winningShares * issuePrice).toFixed(2)
+    
+    // 计算中签率
+    const isHKStock = this.isHKStock(this.data.stockInfo.stockName)
+    const totalShares = isHKStock ? subscriptionHands * 100 : subscriptionHands
+    const winningRate = totalShares > 0 ? ((winningShares / totalShares) * 100).toFixed(2) : '0.00'
+    
+    // 计算各项费用（包括中签股数为0的情况）
+    const feeDetails = this.calculateFees(winningShares, issuePrice, packageFee)
+    
+    this.setData({
+      calculatedAmount: calculatedAmount,
+      winningRate: winningRate,
+      feeDetails: feeDetails
+    })
+    
+    console.log('费用计算结果:', {
+      winningShares: winningShares,
+      issuePrice: issuePrice,
+      calculatedAmount: calculatedAmount,
+      feeDetails: feeDetails
+    })
   },
 
   // 计算各项费用
@@ -269,11 +269,12 @@ Page({
 
   onSubmit(e) {
     const formData = e.detail.value
-    const winningShares = parseInt(formData.winningShares)
+    const winningShares = parseInt(formData.winningShares) || 0  // 允许0值
     
-    if (!winningShares || winningShares <= 0) {
+    // 修改验证逻辑：允许中签股数为0（打新未中签）
+    if (winningShares < 0) {
       wx.showToast({
-        title: '请输入有效的中签股数',
+        title: '中签股数不能为负数',
         icon: 'none'
       })
       return
@@ -290,11 +291,27 @@ Page({
     // 使用中签日期+固定时间 10:00（中签在卖出之前）
     const winningDateTime = new Date(`${this.data.formData.winningDate} 10:00`)
     
-    this.saveWinningResult({
+    const winningData = {
       winningShares: winningShares,
       winningTime: winningDateTime.getTime(),
       winningFeeDetails: this.data.feeDetails
-    })
+    }
+
+    // 如果中签股数为0，显示确认弹框并直接结束打新
+    if (winningShares === 0) {
+      wx.showModal({
+        title: '确认操作',
+        content: '确定要结束这只股票的打新吗？中签股数为0，将直接结束打新状态。',
+        success: (res) => {
+          if (res.confirm) {
+            this.saveWinningResultAndFinish(winningData)
+          }
+        }
+      })
+    } else {
+      // 中签股数大于0，正常保存
+      this.saveWinningResult(winningData)
+    }
   },
 
   saveWinningResult(winningData) {
@@ -418,11 +435,23 @@ Page({
         }
       }
       
+      // 计算并设置profit字段
+      let calculatedProfit = 0
+      if (winningData.winningShares === 0) {
+        // 中签股数为0时，profit为负的总费用（主要是套餐费）
+        calculatedProfit = -totalFees
+      } else {
+        // 中签股数大于0时，profit暂时为0（等卖出后再更新）
+        calculatedProfit = 0
+      }
+      
       stocks[stockIndex] = {
         ...stocks[stockIndex],
         winningShares: winningData.winningShares,
         winningTime: winningData.winningTime,
-        winningFeeDetails: winningData.winningFeeDetails
+        winningFeeDetails: winningData.winningFeeDetails,
+        profit: calculatedProfit,  // 设置profit字段
+        status: 'ongoing'  // 确保有中签记录后状态为进行中
       }
       
       console.log('修改后的股票数据:', stocks[stockIndex])
@@ -437,6 +466,150 @@ Page({
       
       wx.showToast({
         title: '中签结果保存成功',
+        icon: 'success'
+      })
+
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 1500)
+    } else {
+      console.log('错误：未找到对应的股票记录')
+      wx.showToast({
+        title: '保存失败：未找到记录',
+        icon: 'error'
+      })
+    }
+  },
+
+  saveWinningResultAndFinish(winningData) {
+    console.log('保存中签结果并结束打新:', winningData)
+    console.log('当前stockId:', this.data.stockId)
+    
+    let stocks = wx.getStorageSync('stocks') || []
+    console.log('保存前的stocks数据:', stocks)
+    
+    const stockIndex = stocks.findIndex(item => item.id === this.data.stockId)
+    console.log('找到的stockIndex:', stockIndex)
+    
+    if (stockIndex !== -1) {
+      const oldStock = stocks[stockIndex]
+      console.log('修改前的股票数据:', oldStock)
+      
+      // 计算中签金额和费用（中签股数为0时金额为0，但仍有套餐费用）
+      const winningAmount = Math.round(winningData.winningShares * oldStock.issuePrice * 100) / 100
+      const totalFees = parseFloat(winningData.winningFeeDetails.totalFee)
+      
+      // 检查是否为修改操作（之前已有中签记录）
+      const isModification = oldStock.winningShares >= 0 && oldStock.winningTime
+      
+      // 处理资金流水和账户余额
+      if (this.data.fundManager && oldStock.accountId) {
+        try {
+          if (isModification) {
+            // 修改操作：先回滚之前的费用，再扣除新费用
+            const oldWinningAmount = Math.round(oldStock.winningShares * oldStock.issuePrice * 100) / 100
+            const oldTotalFees = oldStock.winningFeeDetails ? parseFloat(oldStock.winningFeeDetails.totalFee) : 0
+            
+            // 回滚之前的申购金额
+            if (oldWinningAmount > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'allot_refund',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: oldWinningAmount,
+                fees: 0,
+                description: `修改中签结果-回滚申购金额 ${oldStock.stockName}`,
+                datetime: new Date().toISOString()
+              })
+            }
+            
+            // 回滚之前的手续费
+            if (oldTotalFees > 0) {
+              this.data.fundManager.addBusinessTransaction({
+                accountId: oldStock.accountId,
+                type: 'fee_refund',
+                stockId: this.data.stockId,
+                stockName: oldStock.stockName,
+                amount: oldTotalFees,
+                fees: 0,
+                description: `修改中签结果-回滚手续费 ${oldStock.stockName}`,
+                datetime: new Date().toISOString()
+              })
+            }
+          }
+          
+          // 扣除新的申购金额（中签股数为0时金额为0，不会产生记录）
+          if (winningAmount > 0) {
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'allot',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: winningAmount,
+              fees: 0,
+              description: `中签申购金额 ${oldStock.stockName} ${winningData.winningShares}股`,
+              datetime: new Date().toISOString(),
+              businessDate: new Date(winningData.winningTime).toISOString()
+            })
+          }
+          
+          // 扣除新的手续费（主要是套餐费用）
+          if (totalFees > 0) {
+            this.data.fundManager.addBusinessTransaction({
+              accountId: oldStock.accountId,
+              type: 'fee_deduction',
+              stockId: this.data.stockId,
+              stockName: oldStock.stockName,
+              amount: totalFees,
+              fees: 0,
+              description: `中签手续费 ${oldStock.stockName} ${winningData.winningShares}股`,
+              datetime: new Date(Date.now() + 100).toISOString(),
+              businessDate: new Date(winningData.winningTime).toISOString()
+            })
+          }
+        } catch (error) {
+          console.error('处理资金流水失败:', error)
+          wx.showModal({
+            title: '警告',
+            content: '中签结果已保存，但资金流水处理失败，请检查账户余额',
+            showCancel: false
+          })
+        }
+      }
+      
+      // 计算并设置profit字段
+      let calculatedProfit = 0
+      if (winningData.winningShares === 0) {
+        // 中签股数为0时，profit为负的总费用（主要是套餐费）
+        calculatedProfit = -totalFees
+      } else {
+        // 中签股数大于0时，profit暂时为0（等卖出后再更新）
+        calculatedProfit = 0
+      }
+      
+      // 保存中签结果并设置状态为已结束
+      stocks[stockIndex] = {
+        ...stocks[stockIndex],
+        winningShares: winningData.winningShares,
+        winningTime: winningData.winningTime,
+        winningFeeDetails: winningData.winningFeeDetails,
+        profit: calculatedProfit,  // 设置profit字段
+        status: 'finished'  // 直接设置为已结束状态
+      }
+      
+      console.log('修改后的股票数据:', stocks[stockIndex])
+      
+      wx.setStorageSync('stocks', stocks)
+      console.log('数据已保存到本地存储')
+      
+      // 验证保存
+      const savedStocks = wx.getStorageSync('stocks') || []
+      const savedStock = savedStocks.find(item => item.id === this.data.stockId)
+      console.log('验证保存结果:', savedStock)
+      
+      wx.showToast({
+        title: '打新已结束',
         icon: 'success'
       })
 

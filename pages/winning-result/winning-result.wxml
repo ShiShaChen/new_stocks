@@ -36,7 +36,7 @@
           hold-keyboard="{{true}}"
           confirm-type="done"
         />
-        <text class="form-tip">中签数不能超过申购股数：{{maxWinningShares}} 股</text>
+        <text class="form-tip">中签数不能超过申购股数：{{maxWinningShares}} 股，未中签请输入0</text>
       </view>
 
       <view class="form-item">
@@ -52,12 +52,12 @@
         </picker>
       </view>
 
-      <!-- 计算结果预览 -->
-      <view class="result-preview" wx:if="{{formData.winningShares > 0}}">
+      <!-- 计算结果预览 - 始终显示 -->
+      <view class="result-preview">
         <view class="preview-title">中签结果预览</view>
         <view class="preview-item">
           <text class="preview-label">中签数：</text>
-          <text class="preview-value">{{formData.winningShares}} 股</text>
+          <text class="preview-value">{{formData.winningShares || 0}} 股</text>
         </view>
         <view class="preview-item">
           <text class="preview-label">中签金额：</text>
@@ -68,7 +68,7 @@
           <text class="preview-value">{{winningRate}}%</text>
         </view>
         
-        <!-- 费用明细 -->
+        <!-- 费用明细 - 始终显示 -->
         <view class="fee-details">
           <view class="fee-title">应收费用明细</view>
           <view class="fee-item">

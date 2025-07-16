@@ -62,7 +62,7 @@
     </view>
 
     <!-- 中签信息 -->
-    <view class="form-section" wx:if="{{isEdit && formData.winningShares > 0}}">
+    <view class="form-section" wx:if="{{isEdit && formData.winningTime}}">>
       <view class="section-title">中签信息</view>
       <view class="form-item">
         <text class="form-label">中签数</text>
