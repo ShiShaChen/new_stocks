@@ -340,8 +340,48 @@ Page({
       const totalFees = parseFloat(sellData.feeDetails.totalFee)
       const netReceived = Math.round((sellAmount - totalFees) * 100) / 100
       
-      // 检查是否为修改操作（之前已有卖出记录）
-      const isModification = oldStock.sellShares > 0
+      // 检查是否为修改操作（卖出数据是否真的发生了变化）
+      const isModification = oldStock.sellShares > 0 && (
+        oldStock.sellPrice !== sellData.sellPrice ||
+        oldStock.sellShares !== sellData.sellShares ||
+        oldStock.sellTime !== sellData.sellTime
+      )
+      
+      console.log('保存卖出记录-修改检查:', {
+        oldSellPrice: oldStock.sellPrice,
+        newSellPrice: sellData.sellPrice,
+        oldSellShares: oldStock.sellShares,
+        newSellShares: sellData.sellShares,
+        oldSellTime: oldStock.sellTime,
+        newSellTime: sellData.sellTime,
+        isModification: isModification,
+        hasExistingSellRecord: oldStock.sellShares > 0
+      })
+      
+      // 如果已有卖出记录且数据没有变化，只更新记录，不处理资金流水
+      if (oldStock.sellShares > 0 && !isModification) {
+        console.log('卖出数据未变化，仅更新记录')
+        stocks[stockIndex] = {
+          ...stocks[stockIndex],
+          sellPrice: sellData.sellPrice,
+          sellShares: sellData.sellShares,
+          sellTime: sellData.sellTime,
+          profit: sellData.profit,
+          sellFeeDetails: sellData.feeDetails
+        }
+        
+        wx.setStorageSync('stocks', stocks)
+        
+        wx.showToast({
+          title: '记录已保存',
+          icon: 'success'
+        })
+
+        setTimeout(() => {
+          wx.navigateBack()
+        }, 1500)
+        return
+      }
       
       // 处理资金流水和账户余额
       if (this.data.fundManager && oldStock.accountId) {
@@ -551,8 +591,44 @@ Page({
       const totalFees = parseFloat(sellData.feeDetails.totalFee)
       const netReceived = Math.round((sellAmount - totalFees) * 100) / 100
       
-      // 检查是否为修改操作（之前已有卖出记录）
-      const isModification = oldStock.sellShares > 0
+      // 检查是否为修改操作（卖出数据是否真的发生了变化）
+      const isModification = oldStock.sellShares > 0 && (
+        oldStock.sellPrice !== sellData.sellPrice ||
+        oldStock.sellShares !== sellData.sellShares ||
+        oldStock.sellTime !== sellData.sellTime
+      )
+      
+      console.log('结束打新-修改检查:', {
+        oldSellPrice: oldStock.sellPrice,
+        newSellPrice: sellData.sellPrice,
+        oldSellShares: oldStock.sellShares,
+        newSellShares: sellData.sellShares,
+        oldSellTime: oldStock.sellTime,
+        newSellTime: sellData.sellTime,
+        isModification: isModification,
+        hasExistingSellRecord: oldStock.sellShares > 0
+      })
+      
+      // 如果已有卖出记录且数据没有变化，只更新状态，不处理资金流水
+      if (oldStock.sellShares > 0 && !isModification) {
+        console.log('卖出数据未变化，仅更新状态为结束')
+        stocks[stockIndex] = {
+          ...stocks[stockIndex],
+          status: 'finished'
+        }
+        
+        wx.setStorageSync('stocks', stocks)
+        
+        wx.showToast({
+          title: '打新已结束',
+          icon: 'success'
+        })
+
+        setTimeout(() => {
+          wx.navigateBack()
+        }, 1500)
+        return
+      }
       
       // 处理资金流水和账户余额
       if (this.data.fundManager && oldStock.accountId) {
