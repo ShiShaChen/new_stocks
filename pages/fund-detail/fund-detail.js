@@ -213,8 +213,10 @@ Page({
               amountColorClass: this.getAmountColorClass(businessRecord),
               displayDescription: this.getDisplayDescription(businessRecord),
               formattedDateTime: this.formatDetailDateTime(businessRecord.timestamp),
-              // 如果有业务日期，优先显示业务日期，否则显示实际时间戳
-              businessDateTime: record.businessDate ? this.formatBusinessDateTime(record.businessDate) : null
+              // 如果业务类型被识别且有业务日期，优先显示业务日期；否则显示实际操作时间
+              businessDateTime: record.businessDate && businessRecord.displayType !== record.type 
+                ? this.formatBusinessDateTime(record.businessDate) 
+                : null
             }
           })
         allRecords = allRecords.concat(filteredBusinessRecords)
@@ -392,7 +394,10 @@ Page({
       'fee_deduction': '手续费扣除',
       'fee_refund': '手续费退款',
       'sell': '卖出收入',
-      'sell_refund': '卖出退款'
+      'sell_refund': '卖出退款',
+      // 添加资金相关的业务类型
+      'deposit': '资金转入',
+      'withdraw': '资金转出'
     }
     return typeMap[type] || type
   },

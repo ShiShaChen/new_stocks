@@ -23,7 +23,10 @@ Page({
     currentAccount: null,
     
     // 验证状态
-    errors: {}
+    errors: {},
+    
+    // 字符计数
+    descriptionCharCount: 0
   },
 
   onLoad(options) {
@@ -126,7 +129,8 @@ Page({
           time: time,
           description: record.description || '',
           status: record.status
-        }
+        },
+        descriptionCharCount: this.getCharacterCount(record.description || '')
       })
       
       // 设置选择器索引
@@ -163,9 +167,33 @@ Page({
 
   // 描述输入
   onDescriptionInput(e) {
+    const value = e.detail.value
+    const charCount = this.getCharacterCount(value)
+    
+    // 如果超过50个字符，截取前50个字符
+    let finalValue = value
+    if (charCount > 50) {
+      finalValue = this.truncateToCharacterLimit(value, 50)
+    }
+    
     this.setData({
-      'formData.description': e.detail.value
+      'formData.description': finalValue,
+      descriptionCharCount: this.getCharacterCount(finalValue)
     })
+  },
+
+  // 计算字符数（中文、英文、数字等都按1个字符计算）
+  getCharacterCount(text) {
+    if (!text) return 0
+    // 使用Array.from来正确处理Unicode字符（包括emoji等）
+    return Array.from(text).length
+  },
+
+  // 截取字符串到指定字符数限制
+  truncateToCharacterLimit(text, limit) {
+    if (!text) return ''
+    const chars = Array.from(text)
+    return chars.slice(0, limit).join('')
   },
 
   // 显示日期时间选择器

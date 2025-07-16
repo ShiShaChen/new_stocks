@@ -196,6 +196,12 @@ class FundManager {
   // 添加业务交易记录
   addBusinessTransaction(transaction) {
     const transactions = wx.getStorageSync(this.storageKeys.businessTransactions) || []
+    
+    // 调试：输出传入的datetime信息
+    console.log('添加业务交易记录 - 原始datetime:', transaction.datetime)
+    console.log('添加业务交易记录 - 解析时间戳:', new Date(transaction.datetime).getTime())
+    console.log('添加业务交易记录 - 格式化时间:', new Date(transaction.datetime).toLocaleString())
+    
     const newTransaction = {
       id: this.generateTransactionId(),
       ...transaction,

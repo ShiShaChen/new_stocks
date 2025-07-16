@@ -4,7 +4,7 @@
 .container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding-bottom: 120rpx;
+  padding-bottom: 200rpx; /* 增加底部间距，为底部按钮和文字留出空间 */
 }
 
 /* =============== 头部区域 =============== */
@@ -323,7 +323,7 @@
   background: transparent;
   border: none;
   min-height: 160rpx;
-  max-height: 320rpx;
+  max-height: 220rpx;
   line-height: 1.6;
   word-wrap: break-word;
   overflow-y: auto;
@@ -331,13 +331,17 @@
 }
 
 .char-counter {
-  padding: 16rpx 32rpx;
+  height: 46rpx;
   border-top: 2rpx solid #ecf0f1;
+  background: inherit;
+  border-radius: 0 0 24rpx 24rpx;
 }
 
 .char-count {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #95a5a6;
+  margin-top: 10rpx;
+  margin-right: 15rpx;
   float: right;
 }
 
@@ -386,9 +390,10 @@
   left: 0;
   right: 0;
   background: #ffffff;
-  padding: 32rpx 40rpx;
+  padding: 32rpx 40rpx 40rpx; /* 增加底部内间距 */
   border-top: 2rpx solid #f8f9fa;
   box-shadow: 0 -10rpx 30rpx rgba(0, 0, 0, 0.1);
+  z-index: 999; /* 确保按钮在最上层 */
 }
 
 .action-buttons {
@@ -665,8 +670,8 @@
 
 .quick-btn {
   flex: 1;
-  background: rgba(102, 126, 234, 0.1) !important;
-  border: 2rpx solid rgba(102, 126, 234, 0.2) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 2rpx solid rgba(102, 126, 234, 0.3) !important;
   border-radius: 16rpx !important;
   padding: 16rpx 8rpx !important;
   display: flex !important;
@@ -678,21 +683,24 @@
   font-size: 24rpx !important;
   color: #667eea !important;
   transition: all 0.3s ease;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.1);
 }
 
 .quick-btn:active {
-  background: rgba(102, 126, 234, 0.2) !important;
+  background: rgba(102, 126, 234, 0.1) !important;
   transform: translateY(2rpx);
+  box-shadow: 0 1rpx 4rpx rgba(102, 126, 234, 0.2);
 }
 
 .quick-btn .btn-icon {
   font-size: 28rpx;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .quick-btn .btn-text {
   font-size: 22rpx;
   font-weight: 500;
+  color: #5a67d8;
 }
 
 /* 移除旧的复杂日期时间选择器样式 - 保持向后兼容但隐藏 */

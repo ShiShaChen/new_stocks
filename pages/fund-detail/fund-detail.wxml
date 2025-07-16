@@ -79,7 +79,7 @@
             <view class="record-details">
               <text class="type-name">{{item.typeText}}</text>
               <view class="record-meta">
-                <text class="datetime-text">{{item.businessDateTime || item.formattedDateTime}}</text>
+                <text class="datetime-text">{{item.formattedDateTime}}</text>
                 <view class="status-badge {{item.status}}">
                   <text class="status-text">{{item.status === 'pending' ? '处理中' : item.status === 'completed' ? '已完成' : '失败'}}</text>
                 </view>
@@ -268,9 +268,9 @@
   <view class="modal-container" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">备注详情</text>
-      <button class="modal-close-btn" bindtap="hideDescriptionModal">
+      <view class="modal-close-btn" bindtap="hideDescriptionModal">
         <text class="close-icon">✕</text>
-      </button>
+      </view>
     </view>
     <view class="modal-content">
       <text class="full-description">{{currentDescription}}</text>

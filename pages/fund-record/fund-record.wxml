@@ -123,11 +123,11 @@
             placeholder="添加备注说明，记录资金用途..."
             value="{{formData.description}}"
             bindinput="onDescriptionInput"
-            maxlength="200"
+            maxlength="50"
             show-confirm-bar="{{false}}"
           />
           <view class="char-counter">
-            <text class="char-count">{{formData.description.length || 0}}/200</text>
+            <view class="char-count">{{descriptionCharCount}}/50</view>
           </view>
         </view>
       </view>
