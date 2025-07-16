@@ -13,45 +13,49 @@ Page({
   },
 
   onLoad() {
-    this.checkLogin()
+    // 移除强制登录检查，允许游客访问
+    this.loadUserInfo()
+    this.loadData()
   },
 
   onShow() {
-    this.checkLogin() // 每次显示时都检查登录状态
-    
     // 检查是否有账户变更
     if (wx.getStorageSync('accountChanged')) {
       wx.removeStorageSync('accountChanged')
       this.loadCurrentAccount()
     }
     
-    if (this.data.userInfo) {
-      this.loadData()
-    }
+    // 刷新用户信息和数据
+    this.loadUserInfo()
+    this.loadData()
   },
 
-  checkLogin() {
-    // 从全局数据或本地存储获取用户信息
+  // 加载用户信息（不强制登录）
+  loadUserInfo() {
     const app = getApp()
-    let userInfo = app.getUserInfo()
+    const userInfo = app.getUserInfo()
     
-    if (!userInfo) {
-      wx.redirectTo({
-        url: '/pages/login/login'
-      })
-      return
-    }
-    
-    // 更新页面数据
     this.setData({
       userInfo: userInfo
     })
     
     // 加载当前账户
     this.loadCurrentAccount()
+  },
+
+  checkLogin() {
+    // 保留此方法，供其他需要登录的功能调用
+    const app = getApp()
+    let userInfo = app.getUserInfo()
     
-    // 加载数据
-    this.loadData()
+    if (!userInfo) {
+      wx.navigateTo({
+        url: '/pages/login/login'
+      })
+      return false
+    }
+    
+    return true
   },
 
   // 加载当前账户
@@ -156,7 +160,7 @@ Page({
     return `${month}月${day}日`
   },
 
-  addNewStock() {
+  addNewStock() {    
     wx.navigateTo({
       url: '/pages/add-stock/add-stock'
     })

@@ -3,7 +3,7 @@
   <view class="login-header">
     <image class="logo" src="../../images/logo.png" mode="aspectFit"></image>
     <text class="app-name">打新记录</text>
-    <text class="app-desc">港股美股打新成本盈利记录</text>
+    <text class="app-desc">港股打新成本盈利记录</text>
   </view>
   
   <view class="login-content">

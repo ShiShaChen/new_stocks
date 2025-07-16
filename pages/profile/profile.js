@@ -20,6 +20,11 @@ Page({
   },
 
   onLoad() {
+    // 检查登录状态
+    if (!this.checkLogin()) {
+      return
+    }
+    
     this.getUserInfo()
     this.initializeAccounts()
     this.loadFundsSummary()
@@ -27,6 +32,11 @@ Page({
 
   onShow() {
     console.log('Profile页面显示，开始刷新数据')
+    
+    // 检查登录状态
+    if (!this.checkLogin()) {
+      return
+    }
     
     // 每次显示页面时重新获取用户信息和账户信息
     this.getUserInfo()
@@ -40,6 +50,21 @@ Page({
     
     // 重新加载所有数据，确保数据最新
     this.refreshAllData()
+  },
+
+  // 检查登录状态
+  checkLogin() {
+    const app = getApp()
+    const userInfo = app.getUserInfo()
+    
+    if (!userInfo) {
+      wx.redirectTo({
+        url: '/pages/login/login'
+      })
+      return false
+    }
+    
+    return true
   },
 
   // 刷新所有数据的方法
