@@ -2,8 +2,7 @@
 .container {
   background-color: #f8f9fa;
   min-height: 100vh;
-  padding: 30rpx;
-  padding-bottom: 150rpx;
+  padding: 50rpx 30rpx 150rpx 30rpx;
 }
 
 .stock-info-card {

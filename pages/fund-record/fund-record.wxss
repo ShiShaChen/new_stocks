@@ -4,7 +4,7 @@
 .container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding-bottom: 200rpx; /* 增加底部间距，为底部按钮和文字留出空间 */
+  padding: 50rpx 0 200rpx 0; /* 增加顶部和底部间距 */
 }
 
 /* =============== 头部区域 =============== */
