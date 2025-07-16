@@ -479,7 +479,7 @@ Page({
   onAbout() {
     wx.showModal({
       title: '关于应用',
-      content: 'v0.2.1\n\n资金管理优化，多账户优化，提高系统稳定性',
+      content: 'v0.3.0\n\n 样式优化，提高系统稳定性',
       showCancel: false,
       confirmText: '知道了'
     })
