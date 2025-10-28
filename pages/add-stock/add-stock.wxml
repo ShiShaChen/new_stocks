@@ -11,14 +11,39 @@
         </view>
       </view>
 
+      <!-- 模板选择（仅新增时显示） -->
+      <view class="template-section" wx:if="{{!isEdit}}">
+        <view class="template-tip" wx:if="{{!isFromTemplate}}">
+          <text class="tip-icon">💡</text>
+          <text class="tip-text">使用模板快速填充股票信息</text>
+          <view class="template-btn" bindtap="showTemplateSelector">
+            <text>选择模板</text>
+          </view>
+        </view>
+        <view class="template-selected" wx:if="{{isFromTemplate}}">
+          <view class="selected-info">
+            <text class="selected-icon">✓</text>
+            <text class="selected-text">已应用模板：{{selectedTemplate.stockName}}</text>
+          </view>
+          <view class="clear-template" bindtap="clearTemplate">
+            <text>清除</text>
+          </view>
+        </view>
+      </view>
+
       <view class="form-item">
         <text class="form-label">股票名称 *</text>
-        <input class="form-input" name="stockName" placeholder="请输入股票名称" value="{{formData.stockName}}" disabled="{{readonly}}" />
+        <input class="form-input" name="stockName" placeholder="请输入股票名称" value="{{formData.stockName}}" disabled="{{readonly || isFromTemplate}}" />
+      </view>
+
+      <view class="form-item" wx:if="{{formData.stockCode}}">
+        <text class="form-label">股票代码</text>
+        <input class="form-input" name="stockCode" placeholder="股票代码" value="{{formData.stockCode}}" disabled="{{readonly || isFromTemplate}}" />
       </view>
 
       <view class="form-item">
         <text class="form-label">股票发行价 *</text>
-        <input class="form-input" name="issuePrice" type="digit" placeholder="请输入发行价" value="{{formData.issuePrice}}" disabled="{{readonly}}" />
+        <input class="form-input" name="issuePrice" type="digit" placeholder="请输入发行价" value="{{formData.issuePrice}}" disabled="{{readonly || isFromTemplate}}" />
       </view>
 
       <view class="form-item">
@@ -236,6 +261,50 @@
         >
           创建
         </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 模板选择弹窗 -->
+  <view class="template-modal" wx:if="{{showTemplateModal}}" bindtap="closeTemplateModal">
+    <view class="modal-content template-modal-content" catchtap>
+      <view class="modal-header">
+        <text class="modal-title">选择股票模板</text>
+        <view class="modal-close" bindtap="closeTemplateModal">
+          <text>×</text>
+        </view>
+      </view>
+      
+      <view class="template-list">
+        <view 
+          class="template-item"
+          wx:for="{{templates}}"
+          wx:key="id"
+          data-template="{{item}}"
+          bindtap="selectTemplate"
+        >
+          <view class="template-info">
+            <text class="template-name">{{item.stockName}}</text>
+            <text class="template-code">{{item.stockCode}}</text>
+          </view>
+          <view class="template-price">
+            <text class="price-label">发行价</text>
+            <text class="price-value">¥{{item.issuePrice}}</text>
+          </view>
+          <view class="template-stats" wx:if="{{item.usedAccounts.length > 0}}">
+            <text class="stats-text">已用于 {{item.usedAccounts.length}} 个账户</text>
+          </view>
+        </view>
+        
+        <view class="empty-template" wx:if="{{templates.length === 0}}">
+          <text>暂无可用模板</text>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <view class="footer-tip">
+          <text>提示：选择模板后将自动填充股票名称和发行价</text>
+        </view>
       </view>
     </view>
   </view>

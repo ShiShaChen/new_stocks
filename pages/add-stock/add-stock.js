@@ -1,4 +1,6 @@
 // pages/add-stock/add-stock.js
+const { templateManager } = require('../../utils/templateManager.js')
+
 Page({
   data: {
     isEdit: false,
@@ -9,12 +11,18 @@ Page({
     showAccountModal: false,
     showAddAccountModal: false,
     newAccountName: '',
+    // 新增：模板相关
+    showTemplateModal: false,
+    templates: [],
+    selectedTemplate: null,
+    isFromTemplate: false,
     formData: {
       stockName: '',
+      stockCode: '',
       issuePrice: '',
       packageFee: '',
       subscriptionHands: '',
-      subscriptionMethod: 'cash',
+      subscriptionMethod: 'margin90',
       status: 'ongoing',
       winningShares: 0,
       sellPrice: 0,
@@ -33,6 +41,14 @@ Page({
 
     // 初始化账户
     this.initializeAccounts()
+
+    // 检查是否从模板进入
+    if (options.templateId && !options.id) {
+      const template = templateManager.getTemplateById(options.templateId)
+      if (template) {
+        this.applyTemplate(template)
+      }
+    }
 
     if (options.id) {
       this.setData({
@@ -443,6 +459,9 @@ Page({
     }
     console.log('=== 保存股票数据完成 ===')
     
+    // 标记模板已使用
+    this.markTemplateUsed()
+    
     wx.showToast({
       title: '保存成功',
       icon: 'success'
@@ -476,5 +495,82 @@ Page({
     wx.navigateTo({
       url: `/pages/sell-record/sell-record?stockId=${this.data.stockId}`
     })
+  },
+
+  // ===== 模板相关方法 =====
+
+  // 显示模板选择弹窗
+  showTemplateSelector() {
+    const templates = templateManager.getInProgressTemplates()
+    
+    if (templates.length === 0) {
+      wx.showModal({
+        title: '暂无模板',
+        content: '请先创建股票模板，或直接手动输入股票信息',
+        showCancel: false
+      })
+      return
+    }
+    
+    this.setData({
+      templates: templates,
+      showTemplateModal: true
+    })
+  },
+
+  // 关闭模板选择弹窗
+  closeTemplateModal() {
+    this.setData({
+      showTemplateModal: false
+    })
+  },
+
+  // 选择模板
+  selectTemplate(e) {
+    const { template } = e.currentTarget.dataset
+    this.applyTemplate(template)
+    this.setData({
+      showTemplateModal: false
+    })
+  },
+
+  // 应用模板数据
+  applyTemplate(template) {
+    this.setData({
+      selectedTemplate: template,
+      isFromTemplate: true,
+      'formData.stockName': template.stockName,
+      'formData.stockCode': template.stockCode,
+      'formData.issuePrice': template.issuePrice.toString()
+    })
+    
+    wx.showToast({
+      title: '已应用模板',
+      icon: 'success'
+    })
+  },
+
+  // 清除模板
+  clearTemplate() {
+    this.setData({
+      selectedTemplate: null,
+      isFromTemplate: false,
+      'formData.stockName': '',
+      'formData.stockCode': '',
+      'formData.issuePrice': ''
+    })
+    
+    wx.showToast({
+      title: '已清除模板',
+      icon: 'success'
+    })
+  },
+
+  // 保存时标记模板已使用
+  markTemplateUsed() {
+    if (this.data.selectedTemplate && !this.data.isEdit) {
+      const accountId = this.data.selectedAccount.id
+      templateManager.markTemplateUsed(this.data.selectedTemplate.id, accountId)
+    }
   }
 })

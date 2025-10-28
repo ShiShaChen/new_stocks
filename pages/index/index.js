@@ -166,6 +166,12 @@ Page({
     })
   },
 
+  goToTemplates() {
+    wx.navigateTo({
+      url: '/pages/stock-template/stock-template'
+    })
+  },
+
   editStock(e) {
     const id = e.currentTarget.dataset.id
     wx.navigateTo({

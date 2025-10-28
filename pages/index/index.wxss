@@ -55,6 +55,8 @@
 .action-buttons {
   padding: 0 30rpx;
   margin: 20rpx 0;
+  display: flex;
+  gap: 20rpx;
 }
 
 .btn-primary {
@@ -64,7 +66,7 @@
   padding: 30rpx;
   font-size: 32rpx;
   border: none;
-  width: 100%;
+  flex: 2;
 }
 
 .section-title {

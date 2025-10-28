@@ -1,0 +1,274 @@
+<!--pages/stock-template/stock-template.wxml-->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="header-title">股票模板管理</text>
+    <text class="header-desc">管理打新股票信息模板，快速录入多账户</text>
+  </view>
+
+  <!-- 标签页切换 -->
+  <view class="tabs">
+    <view 
+      class="tab-item {{activeTab === 'inProgress' ? 'active' : ''}}"
+      data-tab="inProgress"
+      bindtap="switchTab"
+    >
+      <text>进行中</text>
+      <text class="badge" wx:if="{{inProgressTemplates.length > 0}}">{{inProgressTemplates.length}}</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'completed' ? 'active' : ''}}"
+      data-tab="completed"
+      bindtap="switchTab"
+    >
+      <text>已完成</text>
+      <text class="badge" wx:if="{{completedTemplates.length > 0}}">{{completedTemplates.length}}</text>
+    </view>
+  </view>
+
+  <!-- 进行中的模板列表 -->
+  <view class="template-list" wx:if="{{activeTab === 'inProgress'}}">
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{inProgressTemplates.length === 0}}">
+      <image class="empty-icon" src="/images/empty.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无进行中的模板</text>
+      <text class="empty-hint">点击下方"+"按钮创建新模板</text>
+    </view>
+
+    <!-- 模板卡片 -->
+    <view 
+      class="template-card {{isSelectionMode ? 'selection-mode' : ''}}"
+      wx:for="{{inProgressTemplates}}"
+      wx:key="id"
+      data-template="{{item}}"
+      bindtap="{{isSelectionMode ? 'toggleTemplateSelection' : ''}}"
+      data-id="{{item.id}}"
+    >
+      <!-- 多选复选框 -->
+      <view class="selection-checkbox" wx:if="{{isSelectionMode}}">
+        <icon type="{{selectedTemplates.indexOf(item.id) > -1 ? 'success' : 'circle'}}" color="{{selectedTemplates.indexOf(item.id) > -1 ? '#07c160' : '#ccc'}}"></icon>
+      </view>
+
+      <view class="card-header">
+        <view class="stock-info">
+          <text class="stock-name">{{item.stockName}}</text>
+          <text class="stock-code">{{item.stockCode}}</text>
+        </view>
+        <view class="issue-price">
+          <text class="price-label">发行价</text>
+          <text class="price-value">¥{{item.issuePrice}}</text>
+        </view>
+      </view>
+
+      <view class="card-body">
+        <!-- 使用进度 -->
+        <view class="progress-section">
+          <view class="progress-header">
+            <text class="progress-label">录入进度</text>
+            <text class="progress-text">{{item.stats.usedAccounts}}/{{item.stats.totalAccounts}}</text>
+          </view>
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.stats.progress}}%"></view>
+          </view>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="card-actions" wx:if="{{!isSelectionMode}}">
+          <view class="action-btn primary" data-template="{{item}}" bindtap="useTemplate">
+            <text>使用模板</text>
+          </view>
+          <view class="action-btn" data-template="{{item}}" bindtap="batchInputAll" wx:if="{{item.stats.remainingAccounts > 0}}">
+            <text>批量录入({{item.stats.remainingAccounts}})</text>
+          </view>
+          <view class="action-btn" data-template="{{item}}" bindtap="editTemplate">
+            <text>编辑</text>
+          </view>
+          <view class="action-btn danger" data-template="{{item}}" bindtap="markAsCompleted">
+            <text>完成</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 创建时间 -->
+      <view class="card-footer">
+        <text class="create-time">创建于 {{item.createTime}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已完成的模板列表 -->
+  <view class="template-list" wx:if="{{activeTab === 'completed'}}">
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{completedTemplates.length === 0}}">
+      <image class="empty-icon" src="/images/empty.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无已完成的模板</text>
+    </view>
+
+    <!-- 清理按钮 -->
+    <view class="clean-btn" wx:if="{{completedTemplates.length > 0}}" bindtap="cleanCompletedTemplates">
+      <text>清理所有已完成模板</text>
+    </view>
+
+    <!-- 模板卡片 -->
+    <view 
+      class="template-card completed"
+      wx:for="{{completedTemplates}}"
+      wx:key="id"
+    >
+      <view class="card-header">
+        <view class="stock-info">
+          <text class="stock-name">{{item.stockName}}</text>
+          <text class="stock-code">{{item.stockCode}}</text>
+          <text class="completed-tag">已完成</text>
+        </view>
+        <view class="issue-price">
+          <text class="price-label">发行价</text>
+          <text class="price-value">¥{{item.issuePrice}}</text>
+        </view>
+      </view>
+
+      <view class="card-body">
+        <view class="completed-info">
+          <text>已在 {{item.stats.usedAccounts}} 个账户录入</text>
+        </view>
+
+        <view class="card-actions">
+          <view class="action-btn" data-template="{{item}}" bindtap="reactivateTemplate">
+            <text>重新激活</text>
+          </view>
+          <view class="action-btn danger" data-template="{{item}}" bindtap="deleteTemplate">
+            <text>删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部工具栏 -->
+  <view class="bottom-toolbar" wx:if="{{activeTab === 'inProgress'}}">
+    <view class="toolbar-left">
+      <view class="tool-btn" wx:if="{{!isSelectionMode}}" bindtap="enterSelectionMode">
+        <text>批量管理</text>
+      </view>
+      <view class="tool-btn" wx:if="{{isSelectionMode}}" bindtap="exitSelectionMode">
+        <text>取消</text>
+      </view>
+      <view class="tool-btn danger" wx:if="{{isSelectionMode}}" bindtap="batchDelete">
+        <text>删除选中({{selectedTemplates.length}})</text>
+      </view>
+    </view>
+    <view class="toolbar-right">
+      <view class="add-btn" bindtap="showAddTemplate" wx:if="{{!isSelectionMode}}">
+        <text class="add-icon">+</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加模板弹窗 -->
+  <view class="modal-mask" wx:if="{{showAddModal}}" bindtap="closeAddModal">
+    <view class="modal-content" catchtap="doNothing">
+      <view class="modal-header">
+        <text class="modal-title">创建股票模板</text>
+        <view class="modal-close" bindtap="closeAddModal">
+          <text>×</text>
+        </view>
+      </view>
+
+      <view class="modal-body">
+        <view class="form-group">
+          <text class="form-label">股票名称</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入股票名称"
+            value="{{formData.stockName}}"
+            bindinput="onStockNameInput"
+          />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">股票代码</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入股票代码"
+            value="{{formData.stockCode}}"
+            bindinput="onStockCodeInput"
+          />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">发行价格</text>
+          <input 
+            class="form-input" 
+            type="digit"
+            placeholder="请输入发行价格"
+            value="{{formData.issuePrice}}"
+            bindinput="onIssuePriceInput"
+          />
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <view class="modal-btn cancel" bindtap="closeAddModal">
+          <text>取消</text>
+        </view>
+        <view class="modal-btn confirm" bindtap="saveTemplate">
+          <text>保存</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑模板弹窗 -->
+  <view class="modal-mask" wx:if="{{showEditModal}}" bindtap="closeEditModal">
+    <view class="modal-content" catchtap="doNothing">
+      <view class="modal-header">
+        <text class="modal-title">编辑股票模板</text>
+        <view class="modal-close" bindtap="closeEditModal">
+          <text>×</text>
+        </view>
+      </view>
+
+      <view class="modal-body">
+        <view class="form-group">
+          <text class="form-label">股票名称</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入股票名称"
+            value="{{formData.stockName}}"
+            bindinput="onStockNameInput"
+          />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">股票代码</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入股票代码"
+            value="{{formData.stockCode}}"
+            bindinput="onStockCodeInput"
+          />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">发行价格</text>
+          <input 
+            class="form-input" 
+            type="digit"
+            placeholder="请输入发行价格"
+            value="{{formData.issuePrice}}"
+            bindinput="onIssuePriceInput"
+          />
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <view class="modal-btn cancel" bindtap="closeEditModal">
+          <text>取消</text>
+        </view>
+        <view class="modal-btn confirm" bindtap="saveEdit">
+          <text>保存</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

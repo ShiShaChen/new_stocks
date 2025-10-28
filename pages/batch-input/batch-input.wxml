@@ -1,0 +1,216 @@
+<!--pages/batch-input/batch-input.wxml-->
+<wxs module="tools">
+  // 检查数组中是否包含某个元素
+  var includes = function(arr, item) {
+    if (!arr || arr.length === 0) return false;
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] === item) return true;
+    }
+    return false;
+  }
+  
+  module.exports = {
+    includes: includes
+  }
+</wxs>
+
+<view class="container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <text class="header-title">批量录入</text>
+    <text class="header-subtitle" wx:if="{{template}}">{{template.stockName}} ({{template.stockCode}})</text>
+    <text class="header-price" wx:if="{{template}}">发行价: ¥{{template.issuePrice}}</text>
+  </view>
+
+  <!-- 步骤指示器 -->
+  <view class="step-indicator">
+    <view class="step-item {{currentStep >= 1 ? 'active' : ''}}">
+      <view class="step-number">1</view>
+      <text class="step-label">选择账户</text>
+    </view>
+    <view class="step-line {{currentStep >= 2 ? 'active' : ''}}"></view>
+    <view class="step-item {{currentStep >= 2 ? 'active' : ''}}">
+      <view class="step-number">2</view>
+      <text class="step-label">录入信息</text>
+    </view>
+    <view class="step-line {{currentStep >= 3 ? 'active' : ''}}"></view>
+    <view class="step-item {{currentStep >= 3 ? 'active' : ''}}">
+      <view class="step-number">3</view>
+      <text class="step-label">确认提交</text>
+    </view>
+  </view>
+
+  <!-- 步骤1：选择账户 -->
+  <view class="step-content" wx:if="{{currentStep === 1}}">
+    <view class="section-header">
+      <text class="section-title">选择要录入的账户</text>
+      <view class="select-all" bindtap="toggleSelectAll">
+        <text>{{selectedAccounts.length === accounts.length ? '取消全选' : '全选'}}</text>
+      </view>
+    </view>
+
+    <view class="account-list">
+      <view 
+        class="account-item {{tools.includes(selectedAccounts, item.id) ? 'selected' : ''}}"
+        wx:for="{{accounts}}"
+        wx:key="id"
+        bindtap="toggleAccount"
+        data-id="{{item.id}}"
+      >
+        <view class="account-info">
+          <text class="account-name">{{item.name}}</text>
+          <text class="account-tag" wx:if="{{item.isDefault}}">默认</text>
+        </view>
+        
+        <!-- 开关按钮 -->
+        <view class="switch-wrapper">
+          <view class="switch {{tools.includes(selectedAccounts, item.id) ? 'switch-on' : 'switch-off'}}">
+            <view class="switch-dot"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="selected-summary">
+      <text>已选择 {{selectedAccounts.length}} 个账户</text>
+    </view>
+  </view>
+
+  <!-- 步骤2：录入信息 -->
+  <view class="step-content" wx:if="{{currentStep === 2}}">
+    <view class="section-header">
+      <text class="section-title">为每个账户录入打新信息</text>
+    </view>
+
+    <view class="input-list">
+      <view 
+        class="input-card"
+        wx:for="{{selectedAccountsData}}"
+        wx:key="id"
+        wx:for-item="account"
+      >
+        <!-- 账户名称 -->
+        <view class="card-title">
+          <text>{{account.name}}</text>
+        </view>
+
+        <view class="form-content">
+          <!-- 认购日期 -->
+          <view class="form-row">
+            <text class="form-label">认购日期</text>
+            <picker 
+              mode="date"
+              value="{{inputData[account.id].subscriptionDate}}"
+              bindchange="onDateChange"
+              data-account-id="{{account.id}}"
+            >
+              <view class="form-value">
+                <text>{{inputData[account.id].subscriptionDate}}</text>
+                <text class="arrow">›</text>
+              </view>
+            </picker>
+            <view class="form-action" bindtap="applyToAll" data-field="subscriptionDate" data-account-id="{{account.id}}">
+              <text>应用全部</text>
+            </view>
+          </view>
+
+          <!-- 申购数量 -->
+          <view class="form-row">
+            <text class="form-label">申购数量</text>
+            <input 
+              class="form-input"
+              type="number"
+              placeholder="请输入"
+              value="{{inputData[account.id].subscriptionHands}}"
+              bindinput="onInputChange"
+              data-account-id="{{account.id}}"
+              data-field="subscriptionHands"
+            />
+            <view class="form-action" bindtap="applyToAll" data-field="subscriptionHands" data-account-id="{{account.id}}">
+              <text>应用全部</text>
+            </view>
+          </view>
+
+          <!-- 打新套餐费用 -->
+          <view class="form-row">
+            <text class="form-label">打新套餐费用</text>
+            <input 
+              class="form-input"
+              type="digit"
+              placeholder="0"
+              value="{{inputData[account.id].packageFee}}"
+              bindinput="onInputChange"
+              data-account-id="{{account.id}}"
+              data-field="packageFee"
+            />
+            <view class="form-action" bindtap="applyToAll" data-field="packageFee" data-account-id="{{account.id}}">
+              <text>应用全部</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤3：确认提交 -->
+  <view class="step-content" wx:if="{{currentStep === 3}}">
+    <view class="section-header">
+      <text class="section-title">确认录入信息</text>
+    </view>
+
+    <view class="confirm-info">
+      <view class="info-item">
+        <text class="info-label">股票信息</text>
+        <text class="info-value">{{template.stockName}} ({{template.stockCode}})</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">发行价格</text>
+        <text class="info-value">¥{{template.issuePrice}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">录入账户数</text>
+        <text class="info-value">{{selectedAccounts.length}} 个</text>
+      </view>
+    </view>
+
+    <view class="confirm-list">
+      <view 
+        class="confirm-card"
+        wx:for="{{selectedAccountsData}}"
+        wx:key="id"
+        wx:for-item="account"
+      >
+        <view class="confirm-header">
+          <text class="account-name">{{account.name}}</text>
+        </view>
+        <view class="confirm-details">
+          <view class="detail-item">
+            <text class="detail-label">认购日期：</text>
+            <text class="detail-value">{{inputData[account.id].subscriptionDate}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">申购数量：</text>
+            <text class="detail-value">{{inputData[account.id].subscriptionHands}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">打新套餐费用：</text>
+            <text class="detail-value">¥{{inputData[account.id].packageFee}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作按钮 -->
+  <view class="bottom-actions">
+    <view class="action-btn secondary" wx:if="{{currentStep > 1}}" bindtap="prevStep">
+      <text>上一步</text>
+    </view>
+    <view class="action-btn primary" wx:if="{{currentStep < 3}}" bindtap="nextStep">
+      <text>下一步 ({{selectedAccounts.length}})</text>
+    </view>
+    <view class="action-btn primary" wx:if="{{currentStep === 3}}" bindtap="submitBatchInput">
+      <text>确认提交</text>
+    </view>
+  </view>
+</view>

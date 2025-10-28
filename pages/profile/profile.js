@@ -584,6 +584,14 @@ Page({
     })
   },
 
+  // 账户管理相关方法
+  // 进入股票模板管理页面
+  onTemplateManagement() {
+    wx.navigateTo({
+      url: '/pages/stock-template/stock-template'
+    })
+  },
+
   // 资金管理相关方法
   // 进入资金管理页面
   onFundManagement() {

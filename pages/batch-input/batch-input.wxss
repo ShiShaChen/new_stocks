@@ -1,0 +1,472 @@
+/* pages/batch-input/batch-input.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 0 220rpx 0;
+}
+
+/* 页面头部 */
+.page-header {
+  padding: 0 30rpx 40rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.header-title {
+  font-size: 52rpx;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.header-subtitle {
+  font-size: 34rpx;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+}
+
+.header-price {
+  font-size: 30rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 4rpx;
+}
+
+/* 步骤指示器 */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 60rpx 50rpx 60rpx;
+  margin-bottom: 20rpx;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14rpx;
+  flex: 1;
+}
+
+.step-number {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: bold;
+  transition: all 0.3s;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.step-item.active .step-number {
+  background: #ffffff;
+  color: #667eea;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+}
+
+.step-label {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.75);
+  transition: all 0.3s;
+}
+
+.step-item.active .step-label {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 28rpx;
+}
+
+.step-line {
+  flex: 1;
+  height: 4rpx;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 -20rpx;
+  margin-bottom: 36rpx;
+  transition: all 0.3s;
+}
+
+.step-line.active {
+  background: #ffffff;
+}
+
+/* 步骤内容 */
+.step-content {
+  padding: 0 30rpx;
+  margin-top: 10rpx;
+}
+
+/* 区块头部 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.select-all {
+  padding: 14rpx 28rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+  font-weight: 500;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.select-all:active {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0.98);
+}
+
+/* 账户列表 */
+.account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.account-item {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 28rpx 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  border: 3rpx solid transparent;
+  min-height: 100rpx;  /* 固定最小高度 */
+}
+
+.account-item:active {
+  opacity: 0.9;  /* 改用透明度，避免缩放导致的布局变化 */
+}
+
+/* 移除选中状态的卡片样式变化 */
+/* .account-item.selected 不再改变卡片样式 */
+
+/* 开关按钮容器 */
+.switch-wrapper {
+  flex-shrink: 0;
+  width: 96rpx;  /* 固定宽度 */
+  height: 52rpx; /* 固定高度 */
+}
+
+/* 开关轨道 */
+.switch {
+  width: 96rpx;
+  height: 52rpx;
+  border-radius: 26rpx;
+  position: relative;
+  transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);  /* 只过渡背景色 */
+}
+
+/* 关闭状态 - 灰色 */
+.switch-off {
+  background: #e0e0e0;
+}
+
+/* 开启状态 - 紫色渐变 */
+.switch-on {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* 开关圆点 */
+.switch-dot {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  position: absolute;
+  top: 4rpx;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);  /* 使用transform替代left */
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  left: 4rpx;  /* 统一起始位置 */
+}
+
+/* 关闭状态 - 圆点在左边 */
+.switch-off .switch-dot {
+  transform: translateX(0);  /* 不移动 */
+}
+
+/* 开启状态 - 圆点在右边 */
+.switch-on .switch-dot {
+  transform: translateX(44rpx);  /* 向右平移44rpx */
+}
+
+.account-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.account-name {
+  font-size: 32rpx;
+  color: #333333;
+  font-weight: 600;
+}
+
+/* 移除选中状态的文字颜色变化 */
+/* .account-item.selected .account-name 不再改变文字颜色 */
+
+.account-tag {
+  padding: 6rpx 14rpx;
+  background: #667eea;
+  color: #ffffff;
+  font-size: 22rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+
+.selected-summary {
+  padding: 28rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 20rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 录入表单列表 */
+.input-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.input-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  padding: 24rpx 32rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ffffff;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.form-content {
+  padding: 30rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.form-label {
+  width: 150rpx;
+  font-size: 30rpx;
+  color: #666666;
+  font-weight: 500;
+}
+
+.form-input {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 24rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  border: 2rpx solid #e0e0e0;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  border-color: #667eea;
+  background: #ffffff;
+}
+
+.form-value {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 24rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #333333;
+  border: 2rpx solid #e0e0e0;
+}
+
+.form-value .arrow {
+  font-size: 42rpx;
+  color: #999999;
+}
+
+.form-action {
+  padding: 16rpx 24rpx;
+  background: #667eea;
+  color: #ffffff;
+  font-size: 26rpx;
+  border-radius: 12rpx;
+  white-space: nowrap;
+  font-weight: 500;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s;
+}
+
+.form-action:active {
+  background: #5a6fd8;
+  transform: scale(0.95);
+}
+
+/* 确认信息 */
+.confirm-info {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-label {
+  font-size: 30rpx;
+  color: #666666;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: bold;
+}
+
+/* 确认列表 */
+.confirm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.confirm-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.confirm-header {
+  padding: 24rpx 32rpx;
+  background: #f8f9fa;
+  border-bottom: 2rpx solid #e0e0e0;
+}
+
+.confirm-header .account-name {
+  font-size: 32rpx;
+  color: #333333;
+  font-weight: bold;
+}
+
+.confirm-details {
+  padding: 28rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+}
+
+.detail-label {
+  width: 180rpx;
+  font-size: 28rpx;
+  color: #999999;
+  font-weight: 500;
+}
+
+.detail-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+/* 底部操作按钮 */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 28rpx 30rpx;
+  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.12);
+  display: flex;
+  gap: 20rpx;
+  z-index: 100;
+}
+
+.action-btn {
+  flex: 1;
+  height: 96rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.4);
+}
+
+.action-btn.secondary {
+  background: #f8f9fa;
+  color: #666666;
+  border: 2rpx solid #e0e0e0;
+}

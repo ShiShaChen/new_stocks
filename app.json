@@ -9,7 +9,9 @@
     "pages/profile/profile",
     "pages/fund-management/fund-management",
     "pages/fund-record/fund-record",
-    "pages/fund-detail/fund-detail"
+    "pages/fund-detail/fund-detail",
+    "pages/stock-template/stock-template",
+    "pages/batch-input/batch-input"
   ],
   "window": {
     "backgroundTextStyle": "light",

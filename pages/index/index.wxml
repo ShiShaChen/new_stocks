@@ -18,9 +18,8 @@
 
   <!-- 操作按钮 -->
   <view class="action-buttons">
-    <button class="btn-primary" bindtap="addNewStock">
-      新增打新记录
-    </button>
+    <button class="btn-primary" bindtap="addNewStock">新增打新记录</button>
+    <button class="btn-primary" bindtap="goToTemplates">模板管理</button>
   </view>
 
   <!-- 进行中的打新列表 -->
@@ -29,7 +28,7 @@
     <view class="stock-item" wx:for="{{ongoingStocks}}" wx:key="id" bindtap="editStock" data-id="{{item.id}}">
       <view class="stock-info">
         <text class="stock-name">{{item.stockName}}</text>
-        <text class="stock-detail">申购 {{item.subscriptionHands}} 手 | 发行价 ¥{{item.issuePrice}}</text>
+        <text class="stock-detail">申购 {{item.subscriptionHands}} 股 | 发行价 ¥{{item.issuePrice}}</text>
         <text class="stock-time">{{item.createTimeStr}}</text>
       </view>
       <view class="stock-actions">
